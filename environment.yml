@@ -1,0 +1,5 @@
+name: straight-forward-git
+channels:
+- conda-forge
+dependencies:
+- nbdime
