@@ -6,7 +6,7 @@ Resolves # .
 
 > Please ensure the following tasks are completed before submitting this pull request.
 
-<!-- -   [ ] Read and understand the [Code of Conduct][code-of-conduct]. -->
+-   [ ] Read and understand the [Code of Conduct][code-of-conduct].
 -   [ ] Read and understood the [licensing terms][license].
 -   [ ] Searched for existing issues and pull requests **before** submitting this pull request.
 -   [ ] Filed an issue (or an issue already existed) **prior to** submitting this pull request.
@@ -45,7 +45,7 @@ No.
 
 <!-- <links> -->
 
-<!-- [code-of-conduct]: https://example.com -->
+[code-of-conduct]: https://github.com/jupyter/governance/blob/master/conduct/code_of_conduct.md
 
 [license]: https://github.com/Quansight/straight-forward-git/blob/master/LICENSE
 

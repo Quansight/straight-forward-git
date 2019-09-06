@@ -10,7 +10,7 @@ about: I have a suggestion (and may want to help contribute 🙂)!
 
 > Please ensure the following tasks are completed before submitting a feature request.
 
-<!-- -   [ ] Read and understood the [Code of Conduct][code-of-conduct]. -->
+-   [ ] Read and understood the [Code of Conduct][code-of-conduct].
 -   [ ] Searched for existing issues and pull requests.
 
 ## Description
@@ -39,6 +39,6 @@ No.
 
 <!-- <links> -->
 
-<!-- [code-of-conduct]: https://example.com -->
+[code-of-conduct]: https://github.com/jupyter/governance/blob/master/conduct/code_of_conduct.md
 
 <!-- </links> -->
