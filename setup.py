@@ -60,8 +60,7 @@ setup(
     data_files=[
         (
             "etc/jupyter/jupyter_server_config.d",
-            "etc/jupyter/jupyter_server_config.d",
-            "jupyterlab_simple_git.json"
+            ["etc/jupyter/jupyter_server_config.d/jupyterlab_simple_git.json"]
         ),
     ],
     install_requires=[
