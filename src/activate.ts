@@ -32,25 +32,23 @@
 // MODULES //
 
 import {
-	JupyterFrontEnd,
-	JupyterFrontEndPlugin
+	JupyterFrontEnd
 } from '@jupyterlab/application';
-
-import activate from './activate';
 
 
 // MAIN //
 
 /**
-* Plugin initialization data.
+* Activates the plugin.
+*
+* @private
+* @param app - Jupyter front-end application instance
 */
-const extension: JupyterFrontEndPlugin<void> = {
-	'id': 'simple-git',
-	'autoStart': true,
-	'activate': activate
-};
+function activate(app: JupyterFrontEnd) {
+	console.log('JupyterLab extension jupyterlab-simple-git is activated!');
+}
 
 
 // EXPORTS //
 
-export default extension;
+export default activate;
