@@ -31,7 +31,7 @@
 
 def _jupyter_server_extension_paths():
     """Declares the Jupyter server extension paths."""
-    return [{'module': 'jupyterlab_simple_git'}]
+    return [{"module": "jupyterlab_simple_git"}]
 
 
 def load_jupyter_server_extension(nbapp):
@@ -42,5 +42,5 @@ def load_jupyter_server_extension(nbapp):
     * `nbapp`: handle to the Notebook web server instance
 
     """
-    root = nbapp.web_app.settings.get('server_root_dir')
+    root = nbapp.web_app.settings.get("server_root_dir")
     print("Root directory: " + root)

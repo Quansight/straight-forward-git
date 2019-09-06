@@ -35,36 +35,36 @@ with open("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name='jupyterlab_simple_git',
-    version='0.1',
+    name="jupyterlab_simple_git",
+    version="0.1",
     description="A Jupyter Notebook server extension that provides a simplified Git interface.",
     long_description=long_description,
-    author='Quansight',
-    url='https://github.com/Quansight/straight-forward-git',
-    license='BSD-3-Clause',
-    platforms='Linux, Mac OS X, Windows',
+    author="Quansight",
+    url="https://github.com/Quansight/straight-forward-git",
+    license="BSD-3-Clause",
+    platforms="Linux, Mac OS X, Windows",
     keywords=[
-        'jupyter',
-        'jupyterlab',
-        'git'
+        "jupyter",
+        "jupyterlab",
+        "git"
     ],
-    python_requires='>=3.5',
+    python_requires=">=3.5",
     classifiers=[
-        'Intended Audience :: Developers',
-        'Intended Audience :: System Administrators',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: BSD-3-Clause',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
+        "Intended Audience :: Developers",
+        "Intended Audience :: System Administrators",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: BSD-3-Clause",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
     ],
     data_files=[
         (
-            'etc/jupyter/jupyter_server_config.d',
-            'etc/jupyter/jupyter_server_config.d',
-            'jupyterlab_simple_git.json'
+            "etc/jupyter/jupyter_server_config.d",
+            "etc/jupyter/jupyter_server_config.d",
+            "jupyterlab_simple_git.json"
         ),
     ],
     install_requires=[
-        'notebook'
+        "notebook"
     ]
 )
