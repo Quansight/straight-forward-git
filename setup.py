@@ -58,6 +58,7 @@ setup(
         "Programming Language :: Python :: 3",
     ],
     data_files=[
+        # akin to `jupyter serverextension enable --sys-prefix`
         (
             "etc/jupyter/jupyter_server_config.d",
             ["etc/jupyter/jupyter_server_config.d/jupyterlab_simple_git.json"]
