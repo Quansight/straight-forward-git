@@ -1,0 +1,143 @@
+#!/usr/bin/env bash
+#
+# @license BSD-3-Clause
+#
+# Copyright (c) 2019 Quansight. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# A git hook called by `git commit`. If this scripts exits with a non-zero status, the commit will be aborted.
+#
+# This hook is called with no arguments.
+
+# shellcheck disable=SC2181
+
+
+# VARIABLES #
+
+# Determine root directory:
+root=$(git rev-parse --show-toplevel)
+
+
+# FUNCTIONS #
+
+# Defines an error handler.
+#
+# $1 - error status
+on_error() {
+	cleanup
+	exit "$1"
+}
+
+# Runs clean-up tasks.
+cleanup() {
+	echo '' >&2
+}
+
+# Checks for non-ASCII filenames (to ensure cross platform portability).
+check_filenames() {
+	local num_files
+	local against
+	local commit
+
+	commit=$(git rev-parse --verify HEAD)
+	if [[ -z "${commit}" ]]; then
+		# This is the initial commit, so we diff against an empty tree object:
+		against='4b825dc642cb6eb9a060e54bf8d69288fbee4904'
+	else
+		against='HEAD'
+	fi
+	# We exploit the fact that the printable range starts with the space character and ends with the tilde. Note that the use of brackets around a `tr` range is okay here, (for portability to Solaris 10's /usr/bin/tr, it's even required), since the square bracket bytes happen to fall in the designated range.
+	num_files=$(git diff --cached --name-only --diff-filter=A -z "${against}" | LC_ALL=C tr -d '[ -~]\0' | wc -c)
+
+	if [[ "${num_files}" -ne 0 ]]; then
+		echo 'Error: Attempting to add a non-ASCII filename. Non-ASCII filenames limit cross-platform portability. Please rename offending files before committing.' >&2
+		return 1
+	fi
+	return 0
+}
+
+# Lints staged files.
+run_lint() {
+	local changed_files
+	local files
+
+	# Get the set of changed files (added and modified):
+	changed_files=$(git diff --name-only --cached --diff-filter AM)
+
+	# Lint Python files...
+	files=$(echo "${changed_files}" | grep '\.py$' | tr '\n' ' ')
+	if [[ -n "${files}" ]]; then
+		make check-python-linters > /dev/null >&2
+		if [[ "$?" -ne 0 ]]; then
+			echo '' >&2
+			echo 'Unable to lint Python files. Ensure that linters are installed.' >&2
+		else
+			make FILES="${files}" lint-python-files > /dev/null >&2
+			if [[ "$?" -ne 0 ]]; then
+				echo '' >&2
+				echo 'Python lint errors.' >&2
+				return 1
+			fi
+		fi
+	fi
+
+	# Lint shell script files...
+	files=$(echo "${changed_files}" | while read -r file; do head -n1 "$file" | grep -q '^\#\!/usr/bin/env bash' && echo "$file"; done | tr '\n' ' ')
+	if [[ -n "${files}" ]]; then
+		make check-shell-linters > /dev/null >&2
+		if [[ "$?" -ne 0 ]]; then
+			echo '' >&2
+			echo 'Unable to lint shell script files. Ensure that linters are installed.' >&2
+		else
+			make FILES="${files}" lint-shell-files > /dev/null >&2
+			if [[ "$?" -ne 0 ]]; then
+				echo '' >&2
+				echo 'Shell script lint errors.' >&2
+				return 1
+			fi
+		fi
+	fi
+
+	return 0
+}
+
+# Main execution sequence.
+main() {
+	check_filenames
+	if [[ "$?" -ne 0 ]]; then
+		on_error 1
+	fi
+	run_lint
+	if [[ "$?" -ne 0 ]]; then
+		on_error 1
+	fi
+	cleanup
+	exit 0
+}
+
+# Run main:
+main

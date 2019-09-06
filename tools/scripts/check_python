@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+#
 # @license BSD-3-Clause
 #
 # Copyright (c) 2019 Quansight. All rights reserved.
@@ -27,15 +29,34 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""Initialize the Jupyter server extension."""
+# Check whether Python is installed.
+#
+# Usage: check_python
+#
 
-def load_jupyter_server_extension(nbapp):
-    """Loads the Jupyter server extension.
+# VARIABLES #
 
-    # Arguments
+# Find python:
+PYTHON=$(command -v python 2>/dev/null)
 
-    * `nbapp`: handle to the Notebook web server instance
 
-    """
-    root = nbapp.web_app.settings.get('server_root_dir')
-    print("Root directory: " + root)
+# FUNCTIONS #
+
+# Prints usage information.
+usage() {
+	echo '' >&2
+	echo 'Usage: check_python' >&2
+	echo '' >&2
+}
+
+# MAIN #
+
+if [[ -x "${PYTHON}" ]] && "${PYTHON}" --version >/dev/null; then
+	echo 'Python is installed.' >&2
+	exit 0
+else
+	echo 'ERROR: missing dependency. Please download Python (https://www.python.org/). Once installed, run the command again.' >&2
+	exit 1
+fi
+
+# TODO: check for minimum version

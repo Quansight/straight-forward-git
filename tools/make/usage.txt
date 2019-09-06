@@ -1,0 +1,13 @@
+
+Usage: make <cmd>
+
+  make help                   Print this message.
+  make notes                  Search for code annotations.
+  make lint                   Lint files.
+  make check-deps             Check if dependencies are up-to-date.
+  make install-deps           Install external library dependencies.
+  make clean                  Run all cleanup tasks.
+  make clean-deps             Remove external library dependencies.
+  make inspect.VARIABLE       Print the runtime value of a VARIABLE.
+  make assert.VARIABLE        Assert that a VARIABLE is set.
+
