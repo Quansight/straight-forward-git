@@ -116,6 +116,10 @@ pids
 *.pid
 *.seed
 
+# Typescript #
+##############
+*.tsbuildinfo
+
 # Matlab #
 ##########
 *.asv
