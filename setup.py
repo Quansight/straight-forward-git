@@ -49,7 +49,7 @@ setup(
         'git'
     ],
     python_requires='>=3.5',
-    classifiers     = [
+    classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
         'Intended Audience :: Science/Research',
