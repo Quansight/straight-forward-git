@@ -1,4 +1,3 @@
-#/
 # @license BSD-3-Clause
 #
 # Copyright (c) 2019 Quansight. All rights reserved.
@@ -27,98 +26,45 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#/
 
-# Files #
-#########
-.environment.yml
-Makefile
-MANIFEST.in
-requirements.txt
-TODO.md
+"""jupyter_simple_git setup."""
 
-*.bundle.*
+from setuptools import setup
 
+with open("README.md", "r") as f:
+    long_description = f.read()
 
-# Directories #
-###############
-.github/
-**/build/
-**/examples/
-reports/
-support/
-**/test/
-**/tmp/
-
-# Ignore top-level directories:
-/jupyterlab-config/
-/jupyterlab_simple_git/
-/deps/
-/docs/
-/etc/
-/tools/
-
-
-# Node.js #
-###########
-.npmignore
-/node_modules/
-
-
-# TypeScript #
-##############
-tsconfig.json
-tslint.json
-*.tsbuildinfo
-
-
-# Python #
-##########
-__pycache__/
-*.py[cod]
-*$py.class
-*.egg-info/
-.ipynb_checkpoints
-setup.cfg
-setup.py
-
-
-# Logs #
-########
-*.log
-
-
-# OS generated files #
-######################
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Icon?
-ehthumbs.db
-Thumbs.db
-Desktop.ini
-
-
-# Temporary files #
-###################
-*~
-
-
-# Git #
-#######
-.git*
-.mailmap
-
-
-# Utilities #
-#############
-.eslintrc*
-.eslintignore
-
-.pylintrc
-.pycodestyle
-.pydocstyle
-
-.editorconfig
+setup(
+    name='jupyterlab_simple_git',
+    version='0.1',
+    description="A Jupyter Notebook server extension that provides a simplified Git interface.",
+    long_description=long_description,
+    author='Quansight',
+    url='https://github.com/Quansight/straight-forward-git',
+    license='BSD-3-Clause',
+    platforms='Linux, Mac OS X, Windows',
+    keywords=[
+        'jupyter',
+        'jupyterlab',
+        'git'
+    ],
+    python_requires='>=3.5',
+    classifiers     = [
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: BSD-3-Clause',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
+    ],
+    data_files=[
+        (
+            'etc/jupyter/jupyter_server_config.d',
+            'etc/jupyter/jupyter_server_config.d',
+            'jupyterlab_simple_git.json'
+        ),
+    ],
+    install_requires=[
+        'notebook'
+    ]
+)

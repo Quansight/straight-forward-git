@@ -29,6 +29,11 @@
 
 """Initialize the Jupyter server extension."""
 
+def _jupyter_server_extension_paths():
+    """Declares the Jupyter server extension paths."""
+    return [{'module': 'jupyterlab_simple_git'}]
+
+
 def load_jupyter_server_extension(nbapp):
     """Loads the Jupyter server extension.
 
