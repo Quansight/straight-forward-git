@@ -48,6 +48,7 @@ support/
 **/tmp/
 
 # Ignore top-level directories:
+/jupyterlab-config/
 /jupyterlab_simple_git/
 /deps/
 /docs/
