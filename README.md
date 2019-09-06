@@ -1,4 +1,4 @@
-# simple-git
+# jupyterlab-simple-git
 
 Simplified git extension for Jupyterlab.
 
@@ -10,7 +10,8 @@ Simplified git extension for Jupyterlab.
 ## Installation
 
 ```bash
-jupyter labextension install simple-git
+pip install jupyterlab_simple_git
+jupyter labextension install jupyterlab-simple-git
 ```
 
 ## Development
