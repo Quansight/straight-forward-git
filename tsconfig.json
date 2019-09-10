@@ -1,24 +1,52 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "charset": "utf8",
     "composite": true,
     "declaration": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "incremental": true,
     "jsx": "react",
+    "keyofStringsOnly": false,
+    "lib": [
+      "es6"
+    ],
+    "locale": "en",
     "module": "esnext",
     "moduleResolution": "node",
+    "newLine": "lf",
     "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": true,
+    "noStrictGenericChecks": false,
     "noUnusedLocals": true,
-    "preserveWatchOutput": true,
-    "resolveJsonModule": true,
+    "noUnusedParameters": true,
     "outDir": "lib",
+    "paths": {},
+    "preserveWatchOutput": true,
+    "pretty": true,
+    "resolveJsonModule": true,
     "rootDir": "src",
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "strict": true,
     "strictNullChecks": false,
+    "suppressExcessPropertyErrors": false,
+    "suppressImplicitAnyIndexErrors": false,
     "target": "es2017",
     "types": []
   },
-  "include": ["src/*"]
+  "include": [
+    "src/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
