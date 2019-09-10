@@ -90,6 +90,9 @@ SHELL_LINTER ?= shellcheck
 # Define the installer to use when installing Python packages:
 PYTHON_PACKAGE_INSTALLER ?= conda
 
+# Define the installer to use when installing Node.js node module dependencies:
+NODE_MODULE_INSTALLER ?= npm
+
 
 # COMMANDS #
 
@@ -152,6 +155,9 @@ NODE ?= node
 
 # Define the command for `npm`:
 NPM ?= npm
+
+# Define the command for `yarn`:
+YARN ?= yarn
 
 # Define the command for `python`:
 PYTHON ?= python

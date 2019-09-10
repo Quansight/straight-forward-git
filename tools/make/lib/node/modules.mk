@@ -40,11 +40,19 @@
 #
 # [1]: https://docs.npmjs.com/cli/install
 #
+# @param {string} [NODE_MODULE_INSTALLER] - name of Node.js node module installer (e.g., `npm`)
+#
 # @example
 # make install-node-modules
 #/
 install-node-modules: $(ROOT_PACKAGE_JSON)
+ifeq ($(NODE_MODULE_INSTALLER), npm)
 	$(QUIET) $(NPM) install
+else
+ifeq ($(NODE_MODULE_INSTALLER), yarn)
+	$(QUIET) $(YARN) install
+endif
+endif
 
 .PHONY: install-node-modules
 
@@ -55,11 +63,19 @@ install-node-modules: $(ROOT_PACKAGE_JSON)
 #
 # -   This rule searches the local package tree and attempts to simplify the overall structure by moving dependencies further up the tree, where they can be more effectively shared by multiple dependent packages.
 #
+# @param {string} [NODE_MODULE_INSTALLER] - name of Node.js node module installer (e.g., `npm`)
+#
 # @example
 # make dedupe-node-modules
 #/
 dedupe-node-modules: $(NODE_MODULES)
+ifeq ($(NODE_MODULE_INSTALLER), npm)
 	$(QUIET) $(NPM) dedupe
+else
+ifeq ($(NODE_MODULE_INSTALLER), yarn)
+	$(QUIET) $(YARN) install
+endif
+endif
 
 .PHONY: dedupe-node-modules
 

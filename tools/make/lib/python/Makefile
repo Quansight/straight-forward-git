@@ -31,37 +31,25 @@
 
 # DEPENDENCIES #
 
-include $(TOOLS_MAKE_LIB_DIR)/deps/python.mk
+include $(TOOLS_MAKE_LIB_DIR)/python/packages.mk
 
 
 # RULES #
 
-#/
-# Installs language dependencies.
+# Runs the Python install sequence.
 #
 # @example
-# make install-lang-deps
-#/
-install-lang-deps: install-deps-python
+# make install-python
+install-python: install-python-packages
 
-.PHONY: install-lang-deps
+.PHONY: install-python
 
 #/
-# Updates language dependencies.
+# Performs Python clean-up tasks, such as removing Python package dependencies.
 #
 # @example
-# make update-deps-python
+# make clean-python
 #/
-update-lang-deps: update-deps-python
+clean-python: clean-python-packages
 
-.PHONY: update-lang-deps
-
-#/
-# Cleans language dependencies.
-#
-# @example
-# make clean-deps-python
-#/
-clean-lang-deps: clean-deps-python
-
-.PHONY: clean-lang-deps
+.PHONY: clean-python

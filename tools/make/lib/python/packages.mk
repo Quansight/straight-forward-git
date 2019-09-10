@@ -44,9 +44,9 @@ PIP_REQUIREMENTS ?= $(CONFIG_DIR)/python/requirements.txt
 # @param {string} [PIP_REQUIREMENTS] - path to requirements file (e.g., `/foo/bar/baz/requirements.txt`)
 #
 # @example
-# make install-deps-python
+# make install-python-packages
 #/
-install-deps-python:
+install-python-packages:
 ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade pip
 	$(QUIET) $(PYTHON) -m pip install -r $(PIP_REQUIREMENTS)
@@ -56,7 +56,7 @@ ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
 endif
 endif
 
-.PHONY: install-deps-python
+.PHONY: install-python-packages
 
 #/
 # Updates Python dependencies.
@@ -65,9 +65,9 @@ endif
 # @param {string} [PIP_REQUIREMENTS] - path to requirements file (e.g., `/foo/bar/baz/requirements.txt`)
 #
 # @example
-# make update-deps-python
+# make update-python-packages
 #/
-update-deps-python:
+update-python-packages:
 ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade pip
 	$(QUIET) $(PYTHON) -m pip install --upgrade -r $(PIP_REQUIREMENTS)
@@ -77,7 +77,7 @@ ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
 endif
 endif
 
-.PHONY: update-deps-python
+.PHONY: update-python-packages
 
 #/
 # Uninstalls Python dependencies.
@@ -86,9 +86,9 @@ endif
 # @param {string} [PIP_REQUIREMENTS] - path to requirements file (e.g., `/foo/bar/baz/requirements.txt`)
 #
 # @example
-# make clean-deps-python
+# make clean-python-packages
 #/
-clean-deps-python:
+clean-python-packages:
 ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade pip
 	$(QUIET) $(PYTHON) -m pip uninstall -r $(PIP_REQUIREMENTS)
@@ -100,4 +100,4 @@ ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
 endif
 endif
 
-.PHONY: clean-deps-python
+.PHONY: clean-python-packages

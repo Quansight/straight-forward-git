@@ -37,6 +37,6 @@
 # @example
 # make install
 #/
-install: install-node
+install: install-node install-python
 
 .PHONY: install
