@@ -31,30 +31,34 @@
 
 // MODULES //
 
-import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
-import { Widget } from '@phosphor/widgets';
+import * as React from 'react';
 
-import { SimpleGitUI } from './git-ui';
+import { ReactWidget } from '@jupyterlab/apputils';
 
-// MAIN //
+export class SimpleGitUI extends ReactWidget {
+  constructor() {
+    super();
+  }
 
-/**
- * Activates the plugin.
- *
- * @private
- * @param app - Jupyter front-end application instance
- */
-function activate(app: JupyterFrontEnd, labShell: ILabShell) {
-  console.log('JupyterLab extension jupyterlab-simple-git is activated!');
+  /**
+   * React render function
+   */
+  protected render(): React.ReactElement<any> | React.ReactElement<any>[] {
+    return (
+      <div style={this.styles['jp-git-window']}>
+        <h1>Simple Git</h1>
+      </div>
+    );
+  }
 
-  const widget = new SimpleGitUI();
-  widget.id = 'jupyterlab-simple-git:ui';
-  widget.title.iconClass = 'jp-GitIcon jp-SideBar-tabIcon';
-  widget.title.caption = 'Simple Git';
-
-  labShell.add(widget, 'left');
+  /**
+   * CSS styles
+   */
+  styles = {
+    'jp-git-window': {
+      background: 'var(--jp-layout-color1)',
+      fontFamily: 'var(--jp-content-font-family)',
+      height: '100%'
+    }
+  };
 }
-
-// EXPORTS //
-
-export default activate;
