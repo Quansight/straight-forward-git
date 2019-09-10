@@ -45,6 +45,28 @@ usage() {
 
 # MAIN #
 
+CURL=$(command -v curl 2>/dev/null)
+echo '-----'
+echo 'curl:' >&2
+echo '' >&2
+if [[ -x "${CURL}" ]]; then
+	"${CURL}" --version >&2
+else
+	echo 'Unable to detect curl.' >&2
+fi
+echo '' >&2
+
+FETCH=$(command -v fetch 2>/dev/null)
+echo '-----'
+echo 'fetch:' >&2
+echo '' >&2
+if [[ -x "${FETCH}" ]]; then
+	"${FETCH}" --version >&2
+else
+	echo 'Unable to detect fetch.' >&2
+fi
+echo '' >&2
+
 GIT=$(command -v git 2>/dev/null)
 echo '-----'
 echo 'git:' >&2
@@ -141,6 +163,17 @@ if [[ -x "${PYTHON}" ]]; then
 	"${PYTHON}" --version >&2
 else
 	echo 'Unable to detect Python.' >&2
+fi
+echo '' >&2
+
+WGET=$(command -v wget 2>/dev/null)
+echo '-----'
+echo 'wget:' >&2
+echo '' >&2
+if [[ -x "${WGET}" ]]; then
+	"${WGET}" --version >&2
+else
+	echo 'Unable to detect wget.' >&2
 fi
 echo '' >&2
 

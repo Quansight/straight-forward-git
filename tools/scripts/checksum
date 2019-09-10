@@ -1,0 +1,190 @@
+#!/usr/bin/env bash
+#
+# @license BSD-3-Clause
+#
+# Copyright (c) 2019 Quansight. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Verify the checksum of one or more files.
+#
+# Usage: checksum <filepath> <hash> <filepath> <hash> ...
+#
+# Arguments:
+#
+#   filepath           File to verify.
+#   hash               Expected checksum.
+#
+
+# shellcheck disable=SC2181
+
+
+# VARIABLES #
+
+# Checksum type:
+checksum_type='sha256'
+
+# Program used to compute a checksum:
+checksum_program=
+
+# Command to compute a checksum:
+cmd=
+
+
+# FUNCTIONS #
+
+# Prints usage information.
+usage() {
+	echo '' >&2
+	echo 'Usage: checksum <filepath> <hash> <filepath> <hash> ...' >&2
+	echo '' >&2
+}
+
+# Defines an error handler.
+#
+# $1 - error status
+on_error() {
+	echo 'ERROR: An error was encountered during execution.' >&2
+	cleanup
+	exit "$1"
+}
+
+# Runs clean-up tasks.
+cleanup() {
+	echo '' >&2
+}
+
+# Prints a success message.
+print_success() {
+	echo 'Success.' >&2
+}
+
+# Prints a checksum.
+#
+# $1 - checksum
+print_checksum() {
+	local num_lines
+	local width
+	local lines
+	local str
+	local len
+	local pos
+
+	width=64 # characters
+
+	len="${#1}"
+	if [[ "${len}" -gt "${width}" ]]; then
+		str="$1"
+		num_lines=$((len / width)) # floored
+		lines=$(seq 0 1 "${num_lines}")      # total_lines = num_lines + 1
+		for i in ${lines}; do
+			pos=$((i * width))
+			echo "    ${str:${pos}:${width}}"
+		done
+	else
+		echo "    $1" >&2
+	fi
+}
+
+# Prints a checksum error.
+#
+# $1 - file
+# $2 - checksum type
+# $3 - checksum program
+# $4 - expected checksum
+# $5 - actual checksum
+print_checksum_error() {
+	echo '' >&2
+	echo "ERROR: $2 checksum failure for $1. Expected:" >&2
+	echo '' >&2
+	print_checksum "$4"
+	echo '' >&2
+	echo "But \`$3\` results in:" >&2
+	echo '' >&2
+	print_checksum "$5"
+	echo '' >&2
+	echo "This may be due to bad downloads or network proxies. Check your network proxy/" >&2
+	echo "firewall settings and try downloading and verifying again." >&2
+	echo '' >&2
+}
+
+# Verifies a checksum.
+#
+# $1 - file
+# $2 - expected checksum
+verify() {
+	local curr_checksum
+
+	curr_checksum=$(eval "${cmd} $1 | awk '{ print \$1; }'")
+	if [[ "${curr_checksum}" != "$2" ]]; then
+		print_checksum_error "$1" "${checksum_type}" "${checksum_program}" "$2" "${curr_checksum}"
+		return 1
+	fi
+	return 0
+}
+
+# Main execution sequence.
+main() {
+	local args
+	local len
+
+	args=("$@")
+	len="${#args[@]}"
+
+	for (( i=0; i<${len}; i+=2 )) ; do
+	    verify "${args[i]}" "${args[i+1]}"
+	    if [[ "$?" -ne 0 ]]; then
+			on_error 1
+		fi
+	done
+	print_success
+	cleanup
+	exit 0
+}
+
+
+# MAIN #
+
+# Handle arguments...
+if [[ "$#" -eq 0 ]]; then
+	usage
+	exit 0
+elif [[ $(($#%2)) -eq 1 ]]; then
+	echo 'ERROR: invalid arguments. Each file to verify must be followed by an expected checksum.' >&2
+	exit 1
+fi
+
+# Find a program for computing a SHA256 checksum...
+if [[ -n "$(command -v sha256sum)" ]]; then
+	checksum_program="sha256sum"
+	cmd='sha256sum'
+elif [[ -n "$(command -v shasum)" ]]; then
+	checksum_program="shasum"
+	cmd='shasum -a 256'
+fi
+
+# Run main:
+main "$@"
