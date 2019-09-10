@@ -28,3 +28,11 @@
 * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+:root {
+    --jp-image-git-icon: url('images/git-icon.png');
+}
+
+.jp-GitIcon {
+    background-image: var(--jp-image-git-icon);
+}
