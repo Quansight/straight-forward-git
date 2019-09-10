@@ -31,28 +31,44 @@
 
 // MODULES //
 
-import {
-	JupyterFrontEnd,
-	JupyterFrontEndPlugin,
-	ILabShell
-} from '@jupyterlab/application';
-
-import activate from './activate';
+import * as React from 'react';
+import { ReactWidget } from '@jupyterlab/apputils';
 
 
 // MAIN //
 
 /**
-* Plugin initialization data.
+* Widget class which adds a Git tab to the left panel.
 */
-const extension: JupyterFrontEndPlugin<void> = {
-	'id': 'simple-git',
-	'autoStart': true,
-	'requires': [ILabShell],
-	'activate': activate
-};
+class SimpleGitUI extends ReactWidget {
+	constructor() {
+		super();
+	}
+
+	/**
+	* Renders the React component.
+	*/
+	protected render(): React.ReactElement<any> | React.ReactElement<any>[] {
+		return (
+			<div style={this.styles['jp-git-window']}>
+				<h1>Simple Git</h1>
+			</div>
+		);
+	}
+
+	/**
+	* CSS styles.
+	*/
+	styles = {
+		'jp-git-window': {
+			'background': 'var(--jp-layout-color1)',
+			'fontFamily': 'var(--jp-content-font-family)',
+			'height': '100%'
+		}
+	};
+}
 
 
 // EXPORTS //
 
-export default extension;
+export default SimpleGitUI;
