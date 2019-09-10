@@ -87,6 +87,9 @@ endif
 # Define the linter to use when linting shell script files:
 SHELL_LINTER ?= shellcheck
 
+# Define the installer to use when installing Python packages:
+PYTHON_PACKAGE_INSTALLER ?= conda
+
 
 # COMMANDS #
 
@@ -152,6 +155,12 @@ NPM ?= npm
 
 # Define the command for `python`:
 PYTHON ?= python
+
+# Define the command for `pip`:
+PIP ?= pip
+
+# Define the command for `conda`:
+CONDA ?= conda
 
 # Define the command for determining the host platform:
 NODE_HOST_PLATFORM ?= $(NODE) -e 'console.log( process.platform )'

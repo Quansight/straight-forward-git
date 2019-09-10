@@ -40,41 +40,64 @@ PIP_REQUIREMENTS ?= $(CONFIG_DIR)/python/requirements.txt
 #/
 # Installs Python dependencies.
 #
+# @param {string} [PYTHON_PACKAGE_INSTALLER] - name of Python package installer (e.g., `pip`)
 # @param {string} [PIP_REQUIREMENTS] - path to requirements file (e.g., `/foo/bar/baz/requirements.txt`)
 #
 # @example
 # make install-deps-python
 #/
 install-deps-python:
+ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade pip
 	$(QUIET) $(PYTHON) -m pip install -r $(PIP_REQUIREMENTS)
+else
+ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
+	$(QUIET) $(CONDA) install --file $(PIP_REQUIREMENTS)
+endif
+endif
 
 .PHONY: install-deps-python
 
 #/
 # Updates Python dependencies.
 #
+# @param {string} [PYTHON_PACKAGE_INSTALLER] - name of Python package installer (e.g., `pip`)
 # @param {string} [PIP_REQUIREMENTS] - path to requirements file (e.g., `/foo/bar/baz/requirements.txt`)
 #
 # @example
 # make update-deps-python
 #/
 update-deps-python:
+ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade pip
 	$(QUIET) $(PYTHON) -m pip install --upgrade -r $(PIP_REQUIREMENTS)
+else
+ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
+	$(QUIET) $(CONDA) install --file $(PIP_REQUIREMENTS)
+endif
+endif
 
 .PHONY: update-deps-python
 
 #/
 # Uninstalls Python dependencies.
 #
+# @param {string} [PYTHON_PACKAGE_INSTALLER] - name of Python package installer (e.g., `pip`)
 # @param {string} [PIP_REQUIREMENTS] - path to requirements file (e.g., `/foo/bar/baz/requirements.txt`)
 #
 # @example
 # make clean-deps-python
 #/
 clean-deps-python:
+ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade pip
 	$(QUIET) $(PYTHON) -m pip uninstall -r $(PIP_REQUIREMENTS)
+else
+ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
+	$(QUIET) $(CAT) $(PIP_REQUIREMENTS) | while read -r package; do \
+		$(CONDA) remove -y $$package || exit 1; \
+	done
+endif
+endif
 
 .PHONY: clean-deps-python
