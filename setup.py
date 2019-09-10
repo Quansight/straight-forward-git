@@ -36,7 +36,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="jupyterlab_simple_git",
-    version="0.1",
+    version="0.0.0",
     description="A Jupyter Notebook server extension that provides a simplified Git interface.",
     long_description=long_description,
     author="Quansight",
