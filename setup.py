@@ -32,13 +32,13 @@
 from setuptools import setup
 
 with open("README.md", "r") as f:
-    long_description = f.read()
+    DESC = f.read()
 
 setup(
     name="jupyterlab_simple_git",
     version="0.0.0",
     description="A Jupyter Notebook server extension that provides a simplified Git interface.",
-    long_description=long_description,
+    long_description=DESC,
     author="Quansight",
     url="https://github.com/Quansight/straight-forward-git",
     license="BSD-3-Clause",
