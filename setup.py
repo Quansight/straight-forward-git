@@ -48,7 +48,7 @@ setup(
         "jupyterlab",
         "git"
     ],
-    python_requires=">=3.5",
+    python_requires=">=3.7",
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
@@ -64,7 +64,5 @@ setup(
             ["etc/jupyter/jupyter_server_config.d/jupyterlab_simple_git.json"]
         ),
     ],
-    install_requires=[
-        "notebook"
-    ]
+    install_requires=[]
 )
