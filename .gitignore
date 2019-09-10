@@ -39,7 +39,7 @@
 ###############
 build/
 downloads/
-lib/
+/lib/
 reports/
 tmp/
 
