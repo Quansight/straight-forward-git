@@ -39,7 +39,7 @@ FILES_FILTER ?= .*/.*
 
 
 # Define a filename pattern for source files:
-SOURCES_PATTERN ?= *.$(TYPESCRIPT_FILENAME_EXT)
+TYPESCRIPT_SOURCES_PATTERN ?= *.$(TYPESCRIPT_FILENAME_EXT)
 
 # Define a filename pattern for Python source files:
 PYTHON_SOURCES_PATTERN ?= *.$(PYTHON_FILENAME_EXT)
