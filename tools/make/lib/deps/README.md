@@ -33,13 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # deps
 
-> External library recipes.
+> External library commands.
 
 <!-- Section to include introductory text. Make sure to keep an empty line after the intro `section` element and another before the `/section` close. -->
 
 <section class="intro">
 
-This directory contains [`make`][make] recipes for installing, removing, and managing the project's external library dependencies.
+This directory contains [`make`][make] rules for installing, removing, and managing the project's external library dependencies.
 
 </section>
 
