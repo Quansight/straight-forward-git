@@ -89,6 +89,17 @@ else
 fi
 echo '' >&2
 
+JUPYTER=$(command -v jupyter 2>/dev/null)
+echo '-----'
+echo 'Jupyter:' >&2
+echo '' >&2
+if [[ -x "${JUPYTER}" ]]; then
+	"${JUPYTER}" --version >&2
+else
+	echo 'Unable to detect Jupyter.' >&2
+fi
+echo '' >&2
+
 NODEJS=$(command -v node 2>/dev/null)
 echo '-----'
 echo 'Node.js:' >&2
