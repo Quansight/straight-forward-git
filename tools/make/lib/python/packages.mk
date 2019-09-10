@@ -52,7 +52,7 @@ ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install -r $(PIP_REQUIREMENTS)
 else
 ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
-	$(QUIET) $(CONDA) install --file $(PIP_REQUIREMENTS)
+	$(QUIET) $(CONDA) install -y --file $(PIP_REQUIREMENTS)
 endif
 endif
 
@@ -73,7 +73,7 @@ ifeq ($(PYTHON_PACKAGE_INSTALLER), pip)
 	$(QUIET) $(PYTHON) -m pip install --upgrade -r $(PIP_REQUIREMENTS)
 else
 ifeq ($(PYTHON_PACKAGE_INSTALLER), conda)
-	$(QUIET) $(CONDA) install --file $(PIP_REQUIREMENTS)
+	$(QUIET) $(CONDA) install -y --file $(PIP_REQUIREMENTS)
 endif
 endif
 
