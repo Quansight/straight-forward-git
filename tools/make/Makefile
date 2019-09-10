@@ -87,7 +87,9 @@ include $(TOOLS_MAKE_LIB_DIR)/debug/Makefile
 include $(TOOLS_MAKE_LIB_DIR)/deps/Makefile
 include $(TOOLS_MAKE_LIB_DIR)/help/Makefile
 include $(TOOLS_MAKE_LIB_DIR)/init/Makefile
+include $(TOOLS_MAKE_LIB_DIR)/install/Makefile
 include $(TOOLS_MAKE_LIB_DIR)/lint/Makefile
+include $(TOOLS_MAKE_LIB_DIR)/node/Makefile
 include $(TOOLS_MAKE_LIB_DIR)/notes/Makefile
 
 
