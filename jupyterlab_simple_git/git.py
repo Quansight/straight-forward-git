@@ -245,7 +245,7 @@ class Git():
         """
         cmd = ['git', 'log', '--pretty=format:%H%n%an%n%ar%n%s']
         if n is not None:
-            cmd.append('-n'+str(n))
+            cmd.append('-n '+str(n))
         cmd.append(path)
 
         response = {}
