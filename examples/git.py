@@ -48,6 +48,10 @@ def main():
     res = git.run(args=['help'])
     print(json.dumps(res, indent=4))
 
+    # Get the current branch:
+    res = git.current_branch()
+    print(json.dumps(res, indent=4))
+
     # Get the current status:
     res = git.status()
     print(json.dumps(res, indent=4))
@@ -61,10 +65,6 @@ def main():
     print(json.dumps(res, indent=4))
 
     res = git.commit_history(n=2)  # last two commits
-    print(json.dumps(res, indent=4))
-
-    # Get the current branch:
-    res = git.current_branch()
     print(json.dumps(res, indent=4))
 
 

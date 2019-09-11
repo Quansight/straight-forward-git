@@ -24,3 +24,4 @@
         -   file
         -   all
     -   init
+7.  create sublime snippets similar to stdlib

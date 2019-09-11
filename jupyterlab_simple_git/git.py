@@ -45,6 +45,144 @@ class Git():
         """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
 
+    def commit_history(self, path='.', n=None):
+        """Return a commit history.
+
+        Args:
+            path: subdirectory path (default: '.')
+            n: number of commits
+
+        Returns:
+            A `dict` containing the commit history. If able to successfully resolve a commit history, the returned `dict` has the following format:
+
+            {
+                'code': int,              # command status code
+                'history': [...dict]      # commits
+            }
+
+            Each `dict` in `history` has the following format:
+
+            {
+                'hash': string,           # commit hash
+                'author': string,         # commit author
+                'relative_date': string,  # relative date of commit
+                'message': string         # commit message
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': [string]   # error message
+            }
+
+        """
+        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%ar%n%s']
+        if n is not None:
+            cmd.append('-n '+str(n))
+        cmd.append(path)
+
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        lines = stdout.decode('utf8').strip()
+        if lines == '':
+            response['history'] = []
+        else:
+            response['history'] = []
+            stride = 4
+            i = 0
+            lines = lines.split('\n')
+            while i < len(lines):
+                tmp = {}
+                tmp['hash'] = lines[i]
+                tmp['author'] = lines[i+1]
+                tmp['relative_date'] = lines[i+2]
+                tmp['message'] = lines[i+3]
+                response['history'].append(tmp)
+                i += stride
+
+        return response
+
+    def current_branch(self):
+        """Return the current branch.
+
+        Returns:
+            A `dict` containing the current branch. If able to successfully resolve the current branch, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'branch': string      # branch name
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': [string]   # error message
+            }
+
+        """
+        cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['branch'] = stdout.decode('utf8').strip()
+
+        return response
+
+    def list_current_changed_files(self, path='.'):
+        """Return the list of files containing changes relative to the index.
+
+        Args:
+            path: subdirectory path (default: '.')
+
+        Returns:
+            A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'files': [...string]  # list of changed files
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': [string]   # error message
+            }
+
+        """
+        cmd = ['git', 'diff', '--name-only', path]
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        lines = stdout.decode('utf8').strip()
+        if lines == '':
+            response['files'] = []
+        else:
+            response['files'] = lines.split('\n')
+
+        return response
+
     def run(self, args='help'):
         """Run a git command.
 
@@ -83,39 +221,6 @@ class Git():
 
         response['code'] = 0
         response['results'] = stdout.decode('utf8').strip()
-
-        return response
-
-    def current_branch(self):
-        """Return the current branch.
-
-        Returns:
-            A `dict` containing the current branch. If able to successfully resolve the current branch, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'branch': string      # branch name
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': [string]   # error message
-            }
-
-        """
-        cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['branch'] = stdout.decode('utf8').strip()
 
         return response
 
@@ -201,110 +306,5 @@ class Git():
                 tmp['action'] = 'untracked'
                 tmp['file'] = line[3:]
             response['differences'].append(tmp)
-
-        return response
-
-    def list_current_changed_files(self, path='.'):
-        """Return the list of files containing changes relative to the index.
-
-        Args:
-            path: subdirectory path (default: '.')
-
-        Returns:
-            A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'files': [...string]  # list of changed files
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': [string]   # error message
-            }
-
-        """
-        cmd = ['git', 'diff', '--name-only', path]
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        lines = stdout.decode('utf8').strip()
-        if lines == '':
-            response['files'] = []
-        else:
-            response['files'] = lines.split('\n')
-
-        return response
-
-    def commit_history(self, path='.', n=None):
-        """Return a commit history.
-
-        Args:
-            path: subdirectory path (default: '.')
-            n: number of commits
-
-        Returns:
-            A `dict` containing the commit history. If able to successfully resolve a commit history, the returned `dict` has the following format:
-
-            {
-                'code': int,              # command status code
-                'history': [...dict]      # commits
-            }
-
-            Each `dict` in `history` has the following format:
-
-            {
-                'hash': string,           # commit hash
-                'author': string,         # commit author
-                'relative_date': string,  # relative date of commit
-                'message': string         # commit message
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': [string]   # error message
-            }
-
-        """
-        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%ar%n%s']
-        if n is not None:
-            cmd.append('-n '+str(n))
-        cmd.append(path)
-
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        lines = stdout.decode('utf8').strip()
-        if lines == '':
-            response['history'] = []
-        else:
-            response['history'] = []
-            stride = 4
-            i = 0
-            lines = lines.split('\n')
-            while i < len(lines):
-                tmp = {}
-                tmp['hash'] = lines[i]
-                tmp['author'] = lines[i+1]
-                tmp['relative_date'] = lines[i+2]
-                tmp['message'] = lines[i+3]
-                response['history'].append(tmp)
-                i += stride
 
         return response
