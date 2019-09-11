@@ -63,6 +63,10 @@ def main():
     res = git.commit_history(n=2)  # last two commits
     print(json.dumps(res, indent=4))
 
+    # Get the current branch:
+    res = git.current_branch()
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()

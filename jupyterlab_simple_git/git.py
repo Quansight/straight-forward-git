@@ -86,6 +86,39 @@ class Git():
 
         return response
 
+    def current_branch(self):
+        """Return the current branch.
+
+        Returns:
+            A `dict` containing the current branch. If able to successfully resolve the current branch, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'branch': string      # branch name
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': [string]   # error message
+            }
+
+        """
+        cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['branch'] = stdout.decode('utf8').strip()
+
+        return response
+
     def status(self, path='.'):
         """Return the working tree status.
 
