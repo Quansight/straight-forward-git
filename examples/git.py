@@ -80,6 +80,23 @@ def main():
     res = git.checkout_branch(git.current_branch()['branch'])
     print(json.dumps(res, indent=4))
 
+    # Attempt to delete a non-existent branch:
+    res = git.delete_branch('foo_bar_biz_bap')
+    print(json.dumps(res, indent=4))
+
+    # Checkout a new branch:
+    branch = git.current_branch()['branch']
+    res = git.checkout_branch('foo_bar_biz_bap')
+    print(json.dumps(res, indent=4))
+
+    # Switch back to the previous branch:
+    res = git.checkout_branch(branch)
+    print(json.dumps(res, indent=4))
+
+    # Delete the new branch:
+    res = git.delete_branch('foo_bar_biz_bap')
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()
