@@ -31,7 +31,6 @@
 
 import os
 import subprocess
-from subprocess import CalledProcessError
 
 
 class Git():
@@ -115,7 +114,7 @@ class Git():
                     tmp['from'] = line[0]
                     tmp['to'] = line[1]
                 response['differences'].append(tmp)
-        except CalledProcessError as err:
+        except subprocess.CalledProcessError as err:
             response['code'] = err.returncode
             response['message'] = err.output.decode('utf8')
 
@@ -146,7 +145,7 @@ class Git():
             stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
             response['code'] = 0
             response['files'] = stdout.decode('utf8').strip().split('\n')
-        except CalledProcessError as err:
+        except subprocess.CalledProcessError as err:
             response['code'] = err.returncode
             response['message'] = err.output.decode('utf8')
 
