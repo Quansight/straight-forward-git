@@ -166,3 +166,68 @@ class Git():
             response['files'] = lines.split('\n')
 
         return response
+
+    def commit_history(self, path='.', n=None):
+        """Return a commit history.
+
+        Args:
+            path: subdirectory path (default: '.')
+            n: number of commits
+
+        Returns:
+            A `dict` containing the commit history. If able to successfully resolve a commit history, the returned `dict` has the following format:
+
+            {
+                'code': int,              # command status code
+                'history': [...dict]      # commits
+            }
+
+            Each `dict` in `history` has the following format:
+
+            {
+                'hash': string,           # commit hash
+                'author': string,         # commit author
+                'relative_date': string,  # relative date of commit
+                'message': string         # commit message
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': [string]   # error message
+            }
+
+        """
+        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%ar%n%s']
+        if n is not None:
+            cmd.append('-n'+str(n))
+        cmd.append(path)
+
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        lines = stdout.decode('utf8').strip()
+        if lines == '':
+            response['history'] = []
+        else:
+            response['history'] = []
+            stride = 4
+            i = 0
+            lines = lines.split('\n')
+            while i < len(lines):
+                tmp = {}
+                tmp['hash'] = lines[i]
+                tmp['author'] = lines[i+1]
+                tmp['relative_date'] = lines[i+2]
+                tmp['message'] = lines[i+3]
+                response['history'].append(tmp)
+                i += stride
+
+        return response

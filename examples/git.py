@@ -52,6 +52,13 @@ def main():
     res = git.list_current_changed_files()
     print(json.dumps(res, indent=4))
 
+    # Get the commit history:
+    res = git.commit_history()
+    print(json.dumps(res, indent=4))
+
+    res = git.commit_history(n=2)
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()
