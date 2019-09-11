@@ -11,8 +11,6 @@
     -   fetch (in order to have access to branches created and pushed by collaborators)
     -   push
     -   list number of changes (additions, deletions, etc)
-    -   delete branch
-        -   force delete
     -   diff
     -   list_branches
     -   list remote branches?
