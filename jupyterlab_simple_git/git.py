@@ -32,6 +32,8 @@
 import os
 import subprocess
 
+# Please keep class methods ordered in alphabetical order...
+
 
 class Git():
     """Class for executing git commands.
