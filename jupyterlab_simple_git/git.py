@@ -56,7 +56,7 @@ class Git():
 
             {
                 'code': int,          # command status code
-                'results': string        # command results
+                'results': string     # command results
             }
 
             Otherwise, if an error is encountered, the returned `dict` has the following format:
