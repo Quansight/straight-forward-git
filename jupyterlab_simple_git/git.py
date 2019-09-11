@@ -27,51 +27,127 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""TODO"""
+"""TODO."""
 
 import os
 import subprocess
 from subprocess import CalledProcessError
 
 
-class Git(object):
+class Git():
     """Class for executing git commands.
 
     Attributes:
         root: canonical file system path of a git repository
+
     """
 
     def __init__(self, root):
-        """Initializes a class instance."""
+        """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
 
-    def list_current_changed_files(self):
-        """Returns the list of files containing changes relative to the index.
+    def status(self, path='.'):
+        """Return the working tree status.
+
+        Args:
+            path: subdirectory path (default: '.')
 
         Returns:
-            A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the `dict` has the following format:
+            A `dict` containing a list of changes. If able to successfully resolve a list of changes, the returned `dict` has the following format:
+
+            {
+                'code': int,              # command status code
+                'differences': [...dict]  # list of changes
+            }
+
+            For modifications, additions, and deletions, each `dict` in `differences` has the following format:
+
+            {
+                'status': string,  # single-letter action abbreviation
+                'action': string,  # action
+                'file': string     # changed file
+            }
+
+            For copies and renames, each `dict` in `differences` has the following format:
+
+            {
+                'status': string,  # single-letter action abbreviation
+                'action': string,  # action
+                'to': string,      # original path
+                'from': string     # destination path
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
 
             {
                 'code': int,          # command status code
-                'files': [...string], # list of changed files
                 'message': [string]   # error message
             }
 
-            Otherwise, if an error is encountered, the `dict` has the following format:
+        """
+        cmd = ['git', 'status', '--porcelain', '--renames', path]
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+            response['code'] = 0
+            response['differences'] = []
+            lines = stdout.decode('utf8').strip().split('\n')
+            for line in lines:
+                tmp = {}
+                tmp['status'] = line[0]
+                if line[0] == 'M':
+                    tmp['action'] = 'modified'
+                    tmp['file'] = line[3:]
+                elif line[0] == 'A':
+                    tmp['action'] = 'added'
+                    tmp['file'] = line[3:]
+                elif line[0] == 'D':
+                    tmp['action'] = 'deleted'
+                    tmp['file'] = line[3:]
+                elif line[0] == 'C':
+                    line = line[3:].split(' -> ')
+                    tmp['action'] = 'copied'
+                    tmp['from'] = line[0]
+                    tmp['to'] = line[1]
+                elif line[0] == 'R':
+                    line = line[3:].split(' -> ')
+                    tmp['action'] = 'renamed'
+                    tmp['from'] = line[0]
+                    tmp['to'] = line[1]
+                response['differences'].append(tmp)
+        except CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+
+        return response
+
+    def list_current_changed_files(self):
+        """Return the list of files containing changes relative to the index.
+
+        Returns:
+            A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'files': [...string]  # list of changed files
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
 
             {
                 'code': int,          # command status code
                 'message': [string]   # error message
             }
+
         """
         cmd = ['git', 'diff', '--name-only']
         response = {}
         try:
-            stdout = subprocess.check_output(cmd, cwd=self.root, stderr=subprocess.STDOUT)
-            response['files'] = stdout.decode('utf8').strip().split('\n')
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
             response['code'] = 0
+            response['files'] = stdout.decode('utf8').strip().split('\n')
         except CalledProcessError as err:
-            response['message'] = err.output.decode('utf8')
             response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
 
         return response
