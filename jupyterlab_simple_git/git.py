@@ -171,8 +171,11 @@ class Git():
 
         return response
 
-    def list_current_changed_files(self):
+    def list_current_changed_files(self, path='.'):
         """Return the list of files containing changes relative to the index.
+
+        Args:
+            path: subdirectory path (default: '.')
 
         Returns:
             A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the returned `dict` has the following format:
@@ -190,7 +193,7 @@ class Git():
             }
 
         """
-        cmd = ['git', 'diff', '--name-only']
+        cmd = ['git', 'diff', '--name-only', path]
         response = {}
         try:
             stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
