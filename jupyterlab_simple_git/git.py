@@ -153,10 +153,16 @@ class Git():
         response = {}
         try:
             stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-            response['code'] = 0
-            response['files'] = stdout.decode('utf8').strip().split('\n')
         except subprocess.CalledProcessError as err:
             response['code'] = err.returncode
             response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        lines = stdout.decode('utf8').strip()
+        if lines == '':
+            response['files'] = []
+        else:
+            response['files'] = lines.split('\n')
 
         return response
