@@ -27,7 +27,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""Execute git commands."""
+"""Execute Git commands."""
 
 import os
 import subprocess
@@ -36,10 +36,10 @@ import subprocess
 
 
 class Git():
-    """Class for executing git commands.
+    """Class for executing Git commands.
 
     Attributes:
-        root: canonical file system path of a git repository
+        root: canonical file system path of a Git repository
 
     """
 
@@ -219,10 +219,10 @@ class Git():
         return response
 
     def run(self, args='help'):
-        """Run a git command.
+        """Run a Git command.
 
         Args:
-            args: git command arguments (default: 'help')
+            args: Git command arguments (default: 'help')
 
         Returns:
             A `dict` containing the command results. If able to successfully execute a command, the returned `dict` has the following format:
