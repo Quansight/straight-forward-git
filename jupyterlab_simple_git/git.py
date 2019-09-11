@@ -92,27 +92,31 @@ class Git():
             response['differences'] = []
             lines = stdout.decode('utf8').strip().split('\n')
             for line in lines:
+                line = line.strip()
                 tmp = {}
                 tmp['status'] = line[0]
                 if line[0] == 'M':
                     tmp['action'] = 'modified'
-                    tmp['file'] = line[3:]
+                    tmp['file'] = line[2:]
                 elif line[0] == 'A':
                     tmp['action'] = 'added'
-                    tmp['file'] = line[3:]
+                    tmp['file'] = line[2:]
                 elif line[0] == 'D':
                     tmp['action'] = 'deleted'
-                    tmp['file'] = line[3:]
+                    tmp['file'] = line[2:]
                 elif line[0] == 'C':
-                    line = line[3:].split(' -> ')
+                    line = line[2:].split(' -> ')
                     tmp['action'] = 'copied'
                     tmp['from'] = line[0]
                     tmp['to'] = line[1]
                 elif line[0] == 'R':
-                    line = line[3:].split(' -> ')
+                    line = line[2:].split(' -> ')
                     tmp['action'] = 'renamed'
                     tmp['from'] = line[0]
                     tmp['to'] = line[1]
+                elif line[0] == '?':
+                    tmp['action'] = 'untracked'
+                    tmp['file'] = line[3:]
                 response['differences'].append(tmp)
         except subprocess.CalledProcessError as err:
             response['code'] = err.returncode
