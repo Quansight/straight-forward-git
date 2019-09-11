@@ -14,7 +14,6 @@
     -   new branch
     -   switch branch
     -   diff
-    -   reset
-        -   file
-        -   all
+    -   list_branches
+    -   list remote branches?
 7.  create sublime snippets similar to stdlib

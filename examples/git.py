@@ -76,6 +76,10 @@ def main():
     res = git.reset(__file__)
     print(json.dumps(res, indent=4))
 
+    # Checkout the current branch (no-op):
+    res = git.checkout_branch(git.current_branch()['branch'])
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()

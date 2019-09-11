@@ -139,6 +139,58 @@ class Git():
 
         return response
 
+    def checkout_branch(self, branch):
+        """Switch to a specified branch.
+
+        Notes:
+            If a specified branch does not exist, the branch is created.
+
+        Args:
+            branch: branch name
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        Raises:
+            HTTPError: must provide a branch argument
+
+        """
+        if not isinstance(branch, str):
+            raise tornado.web.HTTPError(400, 'invalid argument. Must provide a valid branch argument.')
+
+        cmd1 = ['git', 'show-ref', '--quiet', 'refs/heads/'+branch]
+        cmd2 = ['git', 'checkout']
+        try:
+            stdout = subprocess.run(cmd1, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            cmd2.append('-b')
+
+        cmd2.append(branch)
+        response = {}
+        try:
+            stdout = subprocess.run(cmd2, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['message'] = stdout.decode('utf8').strip()
+
+        return response
+
     def commit_history(self, path='.', n=None):
         """Return a commit history.
 
