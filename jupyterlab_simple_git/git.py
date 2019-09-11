@@ -80,8 +80,51 @@ class Git():
         if isinstance(path, str):
             cmd.append(path)
         else:
-            # Assume we provided a list:
+            # Assume we have been provided a list:
             cmd = cmd + path
+
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['message'] = stdout.decode('utf8').strip()
+
+        return response
+
+    def add_all(self, path=None):
+        """Add all file contents to the index.
+
+        Args:
+            path: a subdirectory path, file path, glob or a list of paths and/or globs
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        cmd = ['git', 'add', '-A']
+        if path is not None:
+            if isinstance(path, str):
+                cmd.append(path)
+            else:
+                # Assume we have been provided a list:
+                cmd = cmd + path
 
         response = {}
         try:
