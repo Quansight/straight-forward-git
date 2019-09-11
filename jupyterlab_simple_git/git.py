@@ -48,11 +48,12 @@ class Git():
         """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
 
-    def add(self, path):
+    def add(self, path=None, add_all=False):
         """Add file contents to the index.
 
         Args:
             path: a subdirectory path, file path, glob, or a list of paths and/or globs
+            add_all: boolean indicating whether to add all file contents to the index (default: False)
 
         Returns:
             A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
@@ -68,57 +69,12 @@ class Git():
                 'code': int,          # command status code
                 'message': string     # error message
             }
-
-        Raises:
-            HTTPError: must provide a path argument
 
         """
         cmd = ['git', 'add']
-        if not path:
-            raise tornado.web.HTTPError(400, 'invalid invocation. Must provide a path argument.')
+        if add_all:
+            cmd.append('-A')
 
-        if isinstance(path, str):
-            cmd.append(path)
-        else:
-            # Assume we have been provided a list:
-            cmd = cmd + path
-
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
-
-    def add_all(self, path=None):
-        """Add all file contents to the index.
-
-        Args:
-            path: a subdirectory path, file path, glob, or a list of paths and/or globs
-
-        Returns:
-            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': string     # command results
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': string     # error message
-            }
-
-        """
-        cmd = ['git', 'add', '-A']
         if path is not None:
             if isinstance(path, str):
                 cmd.append(path)
@@ -409,7 +365,7 @@ class Git():
 
         return response
 
-    def reset(self, path):
+    def reset(self, path=None):
         """Remove file contents from the index.
 
         Args:
@@ -430,53 +386,15 @@ class Git():
                 'message': string     # error message
             }
 
-        Raises:
-            HTTPError: must provide a path argument
-
         """
         cmd = ['git', 'reset']
-        if not path:
-            raise tornado.web.HTTPError(400, 'invalid invocation. Must provide a path argument.')
+        if path is not None:
+            if isinstance(path, str):
+                cmd.append(path)
+            else:
+                # Assume we have been provided a list:
+                cmd = cmd + path
 
-        if isinstance(path, str):
-            cmd.append(path)
-        else:
-            # Assume we have been provided a list:
-            cmd = cmd + path
-
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
-
-    def reset_all(self):
-        """Remove all file contents from the index.
-
-        Returns:
-            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': string     # command results
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': string     # error message
-            }
-
-        """
-        cmd = ['git', 'reset']
         response = {}
         try:
             stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
