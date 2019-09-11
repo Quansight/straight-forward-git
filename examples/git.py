@@ -68,6 +68,10 @@ def main():
     res = git.commit_history(n=2)  # last two commits
     print(json.dumps(res, indent=4))
 
+    # Add this file to the working tree:
+    res = git.add(__file__)
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()

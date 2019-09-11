@@ -6,9 +6,6 @@
 4.  Determine the correct value for `install_requires` in `setup.py` (e.g., why `notebook` and not `jupyterlab`?)
 5.  Setup TypeScript linting on pre-commit
 6.  git commands
-    -   config (get/set)
-        -   why? to allow for admins to set the remote, etc
-        -   hmm...I think this may be too complex/unneeded
     -   commit
     -   pull (how to deal with merge conflicts? see https://www.gitkraken.com/git-client for possible inspiration)
     -   fetch (in order to have access to branches created and pushed by collaborators)
@@ -23,5 +20,4 @@
     -   reset
         -   file
         -   all
-    -   init
 7.  create sublime snippets similar to stdlib

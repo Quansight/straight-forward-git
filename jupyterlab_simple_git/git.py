@@ -31,6 +31,7 @@
 
 import os
 import subprocess
+import tornado.web
 
 # Please keep class methods ordered in alphabetical order...
 
@@ -46,6 +47,54 @@ class Git():
     def __init__(self, root):
         """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
+
+    def add(self, path):
+        """Add file contents to the index.
+
+        Args:
+            path: a subdirectory path, file path, glob or a list of paths and/or globs
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        Raises:
+            HTTPError: must provide a path argument
+
+        """
+        cmd = ['git', 'add']
+        if not path:
+            raise tornado.web.HTTPError(400, 'invalid invocation. Must provide a path argument.')
+
+        if isinstance(path, str):
+            cmd.append(path)
+        else:
+            # Assume we provided a list:
+            cmd = cmd + path
+
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['message'] = stdout.decode('utf8').strip()
+
+        return response
 
     def commit_history(self, path='.', n=None):
         """Return a commit history.
