@@ -48,12 +48,12 @@ class Git():
         """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
 
-    def add(self, path=None, add_all=False):
+    def add(self, path='.', update_all=True):
         """Add file contents to the index.
 
         Args:
-            path: a subdirectory path, file path, glob, or a list of paths and/or globs
-            add_all: boolean indicating whether to add all file contents to the index (default: False)
+            path: a subdirectory path, file path, glob, or a list of paths and/or globs (default: '.')
+            update_all: boolean indicating whether to update all entries in the index to match the working tree (default: True)
 
         Returns:
             A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
@@ -72,15 +72,14 @@ class Git():
 
         """
         cmd = ['git', 'add']
-        if add_all:
+        if update_all:
             cmd.append('-A')
 
-        if path is not None:
-            if isinstance(path, str):
-                cmd.append(path)
-            else:
-                # Assume we have been provided a list:
-                cmd = cmd + path
+        if isinstance(path, str):
+            cmd.append(path)
+        else:
+            # Assume we have been provided a list:
+            cmd = cmd + path
 
         response = {}
         try:
@@ -367,6 +366,9 @@ class Git():
 
     def reset(self, path=None):
         """Remove file contents from the index.
+
+        Notes:
+            If not provided a path, this method removes all file contents from the index.
 
         Args:
             path: a subdirectory path, file path, glob, or a list of paths and/or globs

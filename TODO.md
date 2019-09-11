@@ -12,6 +12,12 @@
     -   push
     -   list number of changes (additions, deletions, etc)
     -   diff
-    -   list_branches
+    -   list_branches(local=True, remote=False)?
+    -   list_local_branchs
     -   list remote branches?
 7.  create sublime snippets similar to stdlib
+8.  routes based on flags
+    -   /reset
+    -   /reset_all
+    -   /add
+    -   /add_all
