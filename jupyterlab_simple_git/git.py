@@ -75,7 +75,7 @@ class Git():
 
             {
                 'code': int,          # command status code
-                'message': [string]   # error message
+                'message': string     # error message
             }
 
         """
@@ -127,7 +127,7 @@ class Git():
 
             {
                 'code': int,          # command status code
-                'message': [string]   # error message
+                'message': string     # error message
             }
 
         """
@@ -142,6 +142,39 @@ class Git():
 
         response['code'] = 0
         response['branch'] = stdout.decode('utf8').strip()
+
+        return response
+
+    def init(self):
+        """Create an empty Git repository or reinitialize an existing repository.
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        cmd = ['git', 'init']
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['message'] = stdout.decode('utf8').strip()
 
         return response
 
@@ -163,7 +196,7 @@ class Git():
 
             {
                 'code': int,          # command status code
-                'message': [string]   # error message
+                'message': string     # error message
             }
 
         """
@@ -203,7 +236,7 @@ class Git():
 
             {
                 'code': int,          # command status code
-                'message': [string]   # error message
+                'message': string     # error message
             }
 
         """
@@ -261,7 +294,7 @@ class Git():
 
             {
                 'code': int,          # command status code
-                'message': [string]   # error message
+                'message': string     # error message
             }
 
         """

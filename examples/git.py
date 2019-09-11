@@ -48,6 +48,10 @@ def main():
     res = git.run(args=['help'])
     print(json.dumps(res, indent=4))
 
+    # Attempt to initialize (or reinitialize) a Git repository:
+    res = git.init()
+    print(json.dumps(res, indent=4))
+
     # Get the current branch:
     res = git.current_branch()
     print(json.dumps(res, indent=4))
@@ -61,9 +65,6 @@ def main():
     print(json.dumps(res, indent=4))
 
     # Get the commit history:
-    res = git.commit_history()
-    print(json.dumps(res, indent=4))
-
     res = git.commit_history(n=2)  # last two commits
     print(json.dumps(res, indent=4))
 
