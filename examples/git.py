@@ -72,6 +72,10 @@ def main():
     res = git.add(__file__)
     print(json.dumps(res, indent=4))
 
+    # Remove this file from the working tree:
+    res = git.reset(__file__)
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()

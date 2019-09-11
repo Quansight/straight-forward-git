@@ -14,9 +14,6 @@
     -   new branch
     -   switch branch
     -   diff
-    -   add
-        -   file
-        -   all
     -   reset
         -   file
         -   all
