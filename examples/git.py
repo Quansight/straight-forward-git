@@ -44,6 +44,10 @@ def main():
     cwd = os.getcwd()
     git = Git(cwd)
 
+    # Run a git command:
+    res = git.run(args=['help'])
+    print(json.dumps(res, indent=4))
+
     # Get the current status:
     res = git.status()
     print(json.dumps(res, indent=4))
@@ -56,7 +60,7 @@ def main():
     res = git.commit_history()
     print(json.dumps(res, indent=4))
 
-    res = git.commit_history(n=2)
+    res = git.commit_history(n=2)  # last two commits
     print(json.dumps(res, indent=4))
 
 

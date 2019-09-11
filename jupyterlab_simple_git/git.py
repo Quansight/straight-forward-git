@@ -27,7 +27,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""TODO."""
+"""Execute git commands."""
 
 import os
 import subprocess
@@ -44,6 +44,47 @@ class Git():
     def __init__(self, root):
         """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
+
+    def run(self, args='help'):
+        """Run a git command.
+
+        Args:
+            args: git command arguments (default: 'help')
+
+        Returns:
+            A `dict` containing the command results. If able to successfully execute a command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'results': string        # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': [string]   # error message
+            }
+
+        """
+        cmd = ['git']
+        if isinstance(args, str):
+            cmd.append(args)
+        else:
+            cmd = cmd + args
+
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['results'] = stdout.decode('utf8').strip()
+
+        return response
 
     def status(self, path='.'):
         """Return the working tree status.
