@@ -61,11 +61,11 @@ def main():
     print(json.dumps(res, indent=4))
 
     # Get the list of current changed files:
-    res = git.list_current_changed_files()
+    res = git.current_changed_files()
     print(json.dumps(res, indent=4))
 
     # Get the list of untracked files:
-    res = git.list_untracked_files()
+    res = git.untracked_files()
     print(json.dumps(res, indent=4))
 
     # Get the commit history:
@@ -102,7 +102,7 @@ def main():
     print(json.dumps(res, indent=4))
 
     # List local branches:
-    res = git.list_local_branches()
+    res = git.local_branches()
     print(json.dumps(res, indent=4))
 
     # Fetch remote objects and refs:

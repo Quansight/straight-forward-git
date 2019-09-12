@@ -307,6 +307,44 @@ class Git():
         cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
         return self._run(cmd, clbk)
 
+    def current_changed_files(self, path='.'):
+        """Return the list of files containing changes relative to the index.
+
+        Args:
+            path: subdirectory path (default: '.')
+
+        Returns:
+            A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'files': [...string]  # list of changed files
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        def clbk(response, lines):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                lines: command results
+
+            """
+            if lines == '':
+                response['files'] = []
+            else:
+                response['files'] = lines.split('\n')
+
+        cmd = ['git', 'diff', '--name-only', path]
+        return self._run(cmd, clbk)
+
     def delete_branch(self, branch, force=False):
         """Delete a specified branch.
 
@@ -423,45 +461,7 @@ class Git():
         cmd = ['git', 'init']
         return self._run(cmd)
 
-    def list_current_changed_files(self, path='.'):
-        """Return the list of files containing changes relative to the index.
-
-        Args:
-            path: subdirectory path (default: '.')
-
-        Returns:
-            A `dict` containing a list of changed files. If able to successfully resolve a list of changed files, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'files': [...string]  # list of changed files
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': string     # error message
-            }
-
-        """
-        def clbk(response, lines):
-            """Process command results.
-
-            Args:
-                response: response `dict`
-                lines: command results
-
-            """
-            if lines == '':
-                response['files'] = []
-            else:
-                response['files'] = lines.split('\n')
-
-        cmd = ['git', 'diff', '--name-only', path]
-        return self._run(cmd, clbk)
-
-    def list_local_branches(self):
+    def local_branches(self):
         """Return the list of local branches.
 
         Returns:
@@ -494,44 +494,6 @@ class Git():
                 response['branches'] = lines.split('\n')
 
         cmd = ['git', 'for-each-ref', '--format=\'%(refname:short)\'', 'refs/heads/']
-        return self._run(cmd, clbk)
-
-    def list_untracked_files(self, path='.'):
-        """Return the list of untracked files.
-
-        Args:
-            path: subdirectory path (default: '.')
-
-        Returns:
-            A `dict` containing a list of untracked files. If able to successfully resolve a list of untracked files, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'files': [...string]  # list of untracked files
-            }
-
-            Otherwise, if an error is encountered, the returned `dict` has the following format:
-
-            {
-                'code': int,          # command status code
-                'message': string     # error message
-            }
-
-        """
-        def clbk(response, lines):
-            """Process command results.
-
-            Args:
-                response: response `dict`
-                lines: command results
-
-            """
-            if lines == '':
-                response['files'] = []
-            else:
-                response['files'] = lines.split('\n')
-
-        cmd = ['git', 'ls-files', '-o', '--exclude-standard', path]
         return self._run(cmd, clbk)
 
     def push(self, remote, branch=None):
@@ -724,4 +686,42 @@ class Git():
                 response['differences'].append(tmp)
 
         cmd = ['git', 'status', '--porcelain', '--renames', path]
+        return self._run(cmd, clbk)
+
+    def untracked_files(self, path='.'):
+        """Return the list of untracked files.
+
+        Args:
+            path: subdirectory path (default: '.')
+
+        Returns:
+            A `dict` containing a list of untracked files. If able to successfully resolve a list of untracked files, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'files': [...string]  # list of untracked files
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        def clbk(response, lines):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                lines: command results
+
+            """
+            if lines == '':
+                response['files'] = []
+            else:
+                response['files'] = lines.split('\n')
+
+        cmd = ['git', 'ls-files', '-o', '--exclude-standard', path]
         return self._run(cmd, clbk)
