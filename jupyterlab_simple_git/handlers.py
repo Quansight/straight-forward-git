@@ -247,6 +247,29 @@ class DeleteBranch(BaseHandler):
         self.git.delete_branch(branch, force)
 
 
+class DeleteUntrackedFiles(BaseHandler):
+    """Handler for deleting untracked files."""
+
+    def delete(self):
+        """Delete untracked files.
+
+        Fields:
+            path: subdirectory path (optional)
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        path = self.get_query_argument('path', default='.')
+        res = self.git.delete_untracked_files(path)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -262,7 +285,8 @@ def add_handlers(web_app):
         ('/simple_git/commit_history', CommitHistory),
         ('/simple_git/current_branch', CurrentBranch),
         ('/simple_git/current_changed_files', CurrentChangedFiles),
-        ('/simple_git/delete_branch', DeleteBranch)
+        ('/simple_git/delete_branch', DeleteBranch),
+        ('/simple_git/delete_untracked_files', DeleteUntrackedFiles)
     ]
 
     # Prefix the base URL to each handler:
