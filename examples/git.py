@@ -64,6 +64,10 @@ def main():
     res = git.list_current_changed_files()
     print(json.dumps(res, indent=4))
 
+    # Get the list of untracked files:
+    res = git.list_untracked_files()
+    print(json.dumps(res, indent=4))
+
     # Get the commit history:
     res = git.commit_history(n=2)  # last two commits
     print(json.dumps(res, indent=4))

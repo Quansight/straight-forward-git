@@ -364,6 +364,46 @@ class Git():
 
         return response
 
+    def list_untracked_files(self, path='.'):
+        """Return the list of untracked files.
+
+        Args:
+            path: subdirectory path (default: '.')
+
+        Returns:
+            A `dict` containing a list of untracked files. If able to successfully resolve a list of untracked files, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'files': [...string]  # list of untracked files
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        cmd = ['git', 'ls-files', '-o', '--exclude-standard', path]
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        lines = stdout.decode('utf8').strip()
+        if lines == '':
+            response['files'] = []
+        else:
+            response['files'] = lines.split('\n')
+
+        return response
+
     def reset(self, path=None):
         """Remove file contents from the index.
 
