@@ -461,6 +461,41 @@ class Git():
         cmd = ['git', 'diff', '--name-only', path]
         return self._run(cmd, clbk)
 
+    def list_local_branches(self):
+        """Return the list of local branches.
+
+        Returns:
+            A `dict` containing a list of local branches. If able to successfully resolve a list of local branches, the returned `dict` has the following format:
+
+            {
+                'code': int,             # command status code
+                'branches': [...string]  # list of branches
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,             # command status code
+                'message': string        # error message
+            }
+
+        """
+        def clbk(response, lines):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                lines: command results
+
+            """
+            if lines == '':
+                response['branches'] = []
+            else:
+                response['branches'] = lines.split('\n')
+
+        cmd = ['git', 'for-each-ref', '--format=\'%(refname:short)\'', 'refs/heads/']
+        return self._run(cmd, clbk)
+
     def list_untracked_files(self, path='.'):
         """Return the list of untracked files.
 
