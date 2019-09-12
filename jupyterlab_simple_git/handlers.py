@@ -341,6 +341,38 @@ class LocalBranches(BaseHandler):
         self.finish(res)
 
 
+class Push(BaseHandler):
+    """Handler for updating remote refs along with associated objects."""
+
+    def push(self):
+        """Update remote refs along with associated objects.
+
+        Fields:
+            remote: remote name
+            branch: branch name (optional)
+
+        Returns:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        data = self.get_json_body()
+        if 'remote' not in data:
+            raise tornado.web.HTTPError(400, 'must provide a remote')
+
+        if 'branch' in data:
+            branch = data['branch']
+        else:
+            branch = None
+
+        res = self.git.push(data['remote'], branch)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -360,7 +392,8 @@ def add_handlers(web_app):
         ('/simple_git/delete_untracked_files', DeleteUntrackedFiles),
         ('/simple_git/fetch', Fetch),
         ('/simple_git/init', Init),
-        ('/simple_git/local_branches', LocalBranches)
+        ('/simple_git/local_branches', LocalBranches),
+        ('/simple_git/push', Push)
     ]
 
     # Prefix the base URL to each handler:
