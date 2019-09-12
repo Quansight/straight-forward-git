@@ -499,6 +499,40 @@ class Git():
         cmd = ['git', 'ls-files', '-o', '--exclude-standard', path]
         return self._run(cmd, clbk)
 
+    def push(self, remote, branch=None):
+        """Update remote refs along with associated objects.
+
+        Args:
+            remote: remote name
+            branch: branch name (default: current branch name)
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        if not isinstance(remote, str):
+            raise tornado.web.HTTPError(400, 'invalid argument. Must provide a valid remote argument.')
+
+        cmd = ['git', 'push', remote]
+        if branch is None:
+            cmd.append(self.current_branch()['branch'])
+        else:
+            cmd.append(branch)
+
+        return self._run(cmd)
+
     def reset(self, path=None):
         """Remove file contents from the index.
 

@@ -105,6 +105,10 @@ def main():
     res = git.fetch()
     print(json.dumps(res, indent=4))
 
+    # Attempt to push local changes for the current branch to a non-existent origin:
+    res = git.push('foo-bar-biz-bap')
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()
