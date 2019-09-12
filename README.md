@@ -31,3 +31,17 @@ $ npm run build
 $ jupyter lab build
 ```
 
+## Editors
+
+-   This repository uses [EditorConfig][editorconfig] to maintain consistent coding styles between different editors and IDEs, including [browsers][editorconfig-chrome].
+
+<section class="links">
+
+[editorconfig]: http://editorconfig.org/
+
+[editorconfig-chrome]: https://chrome.google.com/webstore/detail/github-editorconfig/bppnolhdpdfmmpeefopdbpmabdpoefjh?hl=en-US
+
+</section>
+
+<!-- ./links -->
+
