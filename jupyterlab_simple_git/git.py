@@ -48,6 +48,58 @@ class Git():
         """Initialize a class instance."""
         self.root = os.path.realpath(os.path.expanduser(root))
 
+    def _run(self, cmd, clbk=None):
+        """Execute a Git command.
+
+        Notes:
+            When a Git command successfully executes, a provided callback function is provided two arguments:
+
+                -   response: output response `dict`
+                -   raw: string containing raw command results
+
+            The response `dict` provided to the callback function can be extended and has the following format:
+
+            {
+                'code': int           # command status code
+            }
+
+            Otherwise, if not provided a callback function, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # raw command results
+            }
+
+            If an error occurs during command execution, the provided callback is not invoked and the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        Args:
+            cmd: command to run
+            clbk: function which processes command results upon successful command execution
+
+        Returns:
+            A `dict` containing command results.
+
+        """
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        if clbk is not None:
+            clbk(response, stdout.decode('utf8').strip())
+        else:
+            response['message'] = stdout.decode('utf8').strip()
+        return response
+
     def add(self, path='.', update_all=True):
         """Add file contents to the index.
 
@@ -81,18 +133,7 @@ class Git():
             # Assume we have been provided a list:
             cmd = cmd + path
 
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd)
 
     def checkout_branch(self, branch):
         """Switch to a specified branch.
@@ -128,23 +169,12 @@ class Git():
         cmd1 = ['git', 'show-ref', '--quiet', 'refs/heads/'+branch]
         cmd2 = ['git', 'checkout']
         try:
-            stdout = subprocess.run(cmd1, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
+            subprocess.run(cmd1, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError:
             cmd2.append('-b')
 
         cmd2.append(branch)
-        response = {}
-        try:
-            stdout = subprocess.run(cmd2, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd2)
 
     def commit_history(self, path='.', n=None):
         """Return a commit history.
@@ -178,25 +208,18 @@ class Git():
             }
 
         """
-        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%ar%n%s']
-        if n is not None:
-            cmd.append('-n '+str(n))
-        cmd.append(path)
+        def clbk(response, lines):
+            """Process command results.
 
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
+            Args:
+                response: response `dict`
+                lines: command results
 
-        response['code'] = 0
-        lines = stdout.decode('utf8').strip()
-        if lines == '':
+            """
             response['history'] = []
-        else:
-            response['history'] = []
+            if lines == '':
+                return
+
             stride = 4
             i = 0
             lines = lines.split('\n')
@@ -209,7 +232,11 @@ class Git():
                 response['history'].append(tmp)
                 i += stride
 
-        return response
+        cmd = ['git', 'log', '--pretty=format:%H%n%an%n%ar%n%s']
+        if n is not None:
+            cmd.append('-n '+str(n))
+        cmd.append(path)
+        return self._run(cmd, clbk)
 
     def current_branch(self):
         """Return the current branch.
@@ -230,19 +257,18 @@ class Git():
             }
 
         """
+        def clbk(response, branch):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                branch: branch name
+
+            """
+            response['branch'] = branch
+
         cmd = ['git', 'rev-parse', '--abbrev-ref', 'HEAD']
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['branch'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd, clbk)
 
     def delete_branch(self, branch, force=False):
         """Delete a specified branch.
@@ -277,19 +303,7 @@ class Git():
         if force:
             cmd.append('-f')
         cmd.append(branch)
-
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd)
 
     def delete_untracked_files(self, path='.'):
         """Delete untracked files.
@@ -314,18 +328,7 @@ class Git():
 
         """
         cmd = ['git', 'clean', '-df', path]
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd)
 
     def fetch(self, remote=None, prune=False, fetch_all=False):
         """Download objects and refs from a remote repository.
@@ -359,18 +362,7 @@ class Git():
         if remote is not None:
             cmd.append(remote)
 
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd)
 
     def init(self):
         """Create an empty Git repository or reinitialize an existing repository.
@@ -392,18 +384,7 @@ class Git():
 
         """
         cmd = ['git', 'init']
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd)
 
     def list_current_changed_files(self, path='.'):
         """Return the list of files containing changes relative to the index.
@@ -427,23 +408,21 @@ class Git():
             }
 
         """
+        def clbk(response, lines):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                lines: command results
+
+            """
+            if lines == '':
+                response['files'] = []
+            else:
+                response['files'] = lines.split('\n')
+
         cmd = ['git', 'diff', '--name-only', path]
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        lines = stdout.decode('utf8').strip()
-        if lines == '':
-            response['files'] = []
-        else:
-            response['files'] = lines.split('\n')
-
-        return response
+        return self._run(cmd, clbk)
 
     def list_untracked_files(self, path='.'):
         """Return the list of untracked files.
@@ -467,23 +446,21 @@ class Git():
             }
 
         """
+        def clbk(response, lines):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                lines: command results
+
+            """
+            if lines == '':
+                response['files'] = []
+            else:
+                response['files'] = lines.split('\n')
+
         cmd = ['git', 'ls-files', '-o', '--exclude-standard', path]
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        lines = stdout.decode('utf8').strip()
-        if lines == '':
-            response['files'] = []
-        else:
-            response['files'] = lines.split('\n')
-
-        return response
+        return self._run(cmd, clbk)
 
     def reset(self, path=None):
         """Remove file contents from the index.
@@ -518,18 +495,7 @@ class Git():
                 # Assume we have been provided a list:
                 cmd = cmd + path
 
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['message'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd)
 
     def run(self, args='help'):
         """Run a Git command.
@@ -553,24 +519,23 @@ class Git():
             }
 
         """
+        def clbk(response, results):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                results: command results
+
+            """
+            response['results'] = results
+
         cmd = ['git']
         if isinstance(args, str):
             cmd.append(args)
         else:
             cmd = cmd + args
 
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['results'] = stdout.decode('utf8').strip()
-
-        return response
+        return self._run(cmd, clbk)
 
     def status(self, path='.'):
         """Return the working tree status.
@@ -611,48 +576,46 @@ class Git():
             }
 
         """
+        def clbk(response, lines):
+            """Process command results.
+
+            Args:
+                response: response `dict`
+                lines: command results
+
+            """
+            response['differences'] = []
+            if lines == '':
+                return
+
+            lines = lines.split('\n')
+            for line in lines:
+                line = line.strip()
+                tmp = {}
+                tmp['status'] = line[0]
+                if line[0] == 'M':
+                    tmp['action'] = 'modified'
+                    tmp['file'] = line[2:]
+                elif line[0] == 'A':
+                    tmp['action'] = 'added'
+                    tmp['file'] = line[2:]
+                elif line[0] == 'D':
+                    tmp['action'] = 'deleted'
+                    tmp['file'] = line[2:]
+                elif line[0] == 'C':
+                    line = line[2:].split(' -> ')
+                    tmp['action'] = 'copied'
+                    tmp['from'] = line[0]
+                    tmp['to'] = line[1]
+                elif line[0] == 'R':
+                    line = line[2:].split(' -> ')
+                    tmp['action'] = 'renamed'
+                    tmp['from'] = line[0]
+                    tmp['to'] = line[1]
+                elif line[0] == '?':
+                    tmp['action'] = 'untracked'
+                    tmp['file'] = line[3:]
+                response['differences'].append(tmp)
+
         cmd = ['git', 'status', '--porcelain', '--renames', path]
-        response = {}
-        try:
-            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
-        except subprocess.CalledProcessError as err:
-            response['code'] = err.returncode
-            response['message'] = err.output.decode('utf8')
-            return response
-
-        response['code'] = 0
-        response['differences'] = []
-        lines = stdout.decode('utf8').strip()
-        if lines == '':
-            return response
-
-        lines = lines.split('\n')
-        for line in lines:
-            line = line.strip()
-            tmp = {}
-            tmp['status'] = line[0]
-            if line[0] == 'M':
-                tmp['action'] = 'modified'
-                tmp['file'] = line[2:]
-            elif line[0] == 'A':
-                tmp['action'] = 'added'
-                tmp['file'] = line[2:]
-            elif line[0] == 'D':
-                tmp['action'] = 'deleted'
-                tmp['file'] = line[2:]
-            elif line[0] == 'C':
-                line = line[2:].split(' -> ')
-                tmp['action'] = 'copied'
-                tmp['from'] = line[0]
-                tmp['to'] = line[1]
-            elif line[0] == 'R':
-                line = line[2:].split(' -> ')
-                tmp['action'] = 'renamed'
-                tmp['from'] = line[0]
-                tmp['to'] = line[1]
-            elif line[0] == '?':
-                tmp['action'] = 'untracked'
-                tmp['file'] = line[3:]
-            response['differences'].append(tmp)
-
-        return response
+        return self._run(cmd, clbk)
