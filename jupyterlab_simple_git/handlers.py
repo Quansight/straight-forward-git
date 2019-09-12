@@ -179,6 +179,25 @@ class CommitHistory(BaseHandler):
         self.finish(res)
 
 
+class CurrentBranch(BaseHandler):
+    """Handler for returning the current branch."""
+
+    def get(self):
+        """Return the current branch.
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'branch': string      # branch name
+            }
+
+        """
+        res = self.git.current_branch()
+        self.finish(res)
+
+
 class CurrentChangedFiles(BaseHandler):
     """Handler for retrieving the list of files containing changes relative to the index."""
 
@@ -212,6 +231,7 @@ def add_handlers(web_app):
         ('/simple_git/checkout_branch', CheckoutBranch),
         ('/simple_git/commit', Commit),
         ('/simple_git/commit_history', CommitHistory),
+        ('/simple_git/current_branch', CurrentBranch),
         ('/simple_git/current_changed_files', CurrentChangedFiles)
     ]
 
