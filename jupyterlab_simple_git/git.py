@@ -327,6 +327,51 @@ class Git():
 
         return response
 
+    def fetch(self, remote=None, prune=False, fetch_all=False):
+        """Download objects and refs from a remote repository.
+
+        Args:
+            remote: name of remote (default: 'origin')
+            prune: boolean indicating whether to remove any remote-tracking references that no longer exist on the remote
+            fetch_all: boolean indicating whether to fetch all remotes
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        """
+        cmd = ['git', 'fetch']
+        if prune:
+            cmd.append('--prune')
+        if fetch_all:
+            cmd.append('--all')
+        if remote is not None:
+            cmd.append(remote)
+
+        response = {}
+        try:
+            stdout = subprocess.run(cmd, cwd=self.root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=True).stdout
+        except subprocess.CalledProcessError as err:
+            response['code'] = err.returncode
+            response['message'] = err.output.decode('utf8')
+            return response
+
+        response['code'] = 0
+        response['message'] = stdout.decode('utf8').strip()
+
+        return response
+
     def init(self):
         """Create an empty Git repository or reinitialize an existing repository.
 

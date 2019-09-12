@@ -101,6 +101,10 @@ def main():
     res = git.delete_branch('foo_bar_biz_bap')
     print(json.dumps(res, indent=4))
 
+    # Fetch remote objects and refs:
+    res = git.fetch()
+    print(json.dumps(res, indent=4))
+
 
 if __name__ == "__main__":
     main()
