@@ -49,6 +49,8 @@ class BaseHandler(APIHandler):
         return self.settings['git']
 
 
+# Please keep handler classes in alphabetical order...
+
 class CurrentChangedFiles(BaseHandler):
     """Handler class for retrieving the list of files containing changes relative to the index."""
 
@@ -67,6 +69,7 @@ def add_handlers(web_app):
 
     """
     handlers = [
+        # Please keep handlers in alphabetical order...
         ('/simple_git/current_changed_files', CurrentChangedFiles)
     ]
 
