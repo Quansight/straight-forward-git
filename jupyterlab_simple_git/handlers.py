@@ -218,6 +218,35 @@ class CurrentChangedFiles(BaseHandler):
         self.finish(res)
 
 
+class DeleteBranch(BaseHandler):
+    """Handler to delete a specified branch."""
+
+    def delete(self):
+        """Delete a specified branch.
+
+        Fields:
+            branch: branch name
+            force: boolean indicating whether to force delete a specified branch (optional)
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        branch = self.get_query_argument('branch')
+        force = self.get_query_argument('force', default='False')
+        if force == 'True':
+            force = True
+        elif force == 'False':
+            force = False
+
+        self.git.delete_branch(branch, force)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -232,7 +261,8 @@ def add_handlers(web_app):
         ('/simple_git/commit', Commit),
         ('/simple_git/commit_history', CommitHistory),
         ('/simple_git/current_branch', CurrentBranch),
-        ('/simple_git/current_changed_files', CurrentChangedFiles)
+        ('/simple_git/current_changed_files', CurrentChangedFiles),
+        ('/simple_git/delete_branch', DeleteBranch)
     ]
 
     # Prefix the base URL to each handler:
