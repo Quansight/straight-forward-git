@@ -59,8 +59,8 @@ class AddFiles(BaseHandler):
         """Add file contents to the index.
 
         Fields:
-            path: a subdirectory path, file path, glob, or a list of paths and/or globs
-            update_all: boolean indicating whether to update all entries in the index to match the working tree
+            path: a subdirectory path, file path, glob, or a list of paths and/or globs (optional)
+            update_all: boolean indicating whether to update all entries in the index to match the working tree (optional)
 
         Response:
             A JSON object having the following format:
@@ -120,7 +120,7 @@ class Commit(BaseHandler):
 
         Fields:
             subject: commit subject/summary
-            body: commit description
+            body: commit description (optional)
 
         Response:
             A JSON object having the following format:
