@@ -305,6 +305,23 @@ class Fetch(BaseHandler):
         self.finish(res)
 
 
+class Init(BaseHandler):
+    """Handler to create an empty Git repository or reinitialize an existing repository."""
+
+    def post(self):
+        """Create an empty Git repository or reinitialize an existing repository.
+
+        Response:
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        res = self.git.init()
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -322,7 +339,8 @@ def add_handlers(web_app):
         ('/simple_git/current_changed_files', CurrentChangedFiles),
         ('/simple_git/delete_branch', DeleteBranch),
         ('/simple_git/delete_untracked_files', DeleteUntrackedFiles),
-        ('/simple_git/fetch', Fetch)
+        ('/simple_git/fetch', Fetch),
+        ('/simple_git/init', Init)
     ]
 
     # Prefix the base URL to each handler:
