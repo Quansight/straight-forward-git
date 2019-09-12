@@ -150,7 +150,7 @@ class CommitHistory(BaseHandler):
     def get(self):
         """Return a commit history.
 
-        Fields:
+        Parameters:
             path: subdirectory path (optional)
             n: number of commits (optional)
 
@@ -203,6 +203,9 @@ class CurrentChangedFiles(BaseHandler):
 
     def get(self):
         """Retrieve a list of files containing changes relative to the index.
+
+        Parameters:
+            path: subdirectory path (optional)
 
         Response:
             A JSON object having the following format:
@@ -276,7 +279,7 @@ class Fetch(BaseHandler):
     def get(self):
         """Download objects and refs from a remote repository.
 
-        Fields:
+        parameters:
             remote: name of remote (optional)
             prune: boolean indicating whether to remove any remote-tracking references that no longer exist on the remote (optional)
             fetch_all: boolean indicating whether to fetch all remotes (optional)
@@ -430,7 +433,7 @@ class Status(BaseHandler):
     def get(self):
         """Return the working tree status.
 
-        Fields:
+        parameters:
             path: subdirectory path (optional)
 
         Response:
@@ -469,6 +472,9 @@ class UntrackedFiles(BaseHandler):
 
     def get(self):
         """Retrieve a list of untracked files.
+
+        Parameters:
+            path: subdirectory path (optional)
 
         Response:
             A JSON object having the following format:
