@@ -373,6 +373,29 @@ class Push(BaseHandler):
         self.finish(res)
 
 
+class Reset(BaseHandler):
+    """Handler for removing file contents from the index."""
+
+    def delete(self):
+        """Remove file contents from the index.
+
+        Fields:
+            path: a subdirectory path, file path, glob, or a list of paths and/or globs (optional)
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        path = self.get_query_argument('path', default=None)
+        res = self.git.reset(path)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -393,7 +416,8 @@ def add_handlers(web_app):
         ('/simple_git/fetch', Fetch),
         ('/simple_git/init', Init),
         ('/simple_git/local_branches', LocalBranches),
-        ('/simple_git/push', Push)
+        ('/simple_git/push', Push),
+        ('/simple_git/reset', Reset)
     ]
 
     # Prefix the base URL to each handler:
