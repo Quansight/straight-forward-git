@@ -396,6 +396,34 @@ class Reset(BaseHandler):
         self.finish(res)
 
 
+class Run(BaseHandler):
+    """Handler to run a Git command."""
+
+    def post(self):
+        """Run a Git command.
+
+        Fields:
+            args: Git command arguments (optional)
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'results': string     # command results
+            }
+
+        """
+        data = self.get_json_body()
+        if 'args' in data:
+            args = data['args']
+        else:
+            args = 'help'
+
+        res = self.git.run(args)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -417,7 +445,8 @@ def add_handlers(web_app):
         ('/simple_git/init', Init),
         ('/simple_git/local_branches', LocalBranches),
         ('/simple_git/push', Push),
-        ('/simple_git/reset', Reset)
+        ('/simple_git/reset', Reset),
+        ('/simple_git/run', Run)
     ]
 
     # Prefix the base URL to each handler:
