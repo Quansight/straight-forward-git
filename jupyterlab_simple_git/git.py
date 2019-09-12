@@ -689,7 +689,7 @@ class Git():
         return self._run(cmd, clbk)
 
     def untracked_files(self, path='.'):
-        """Return the list of untracked files.
+        """Return a list of untracked files.
 
         Args:
             path: subdirectory path (default: '.')
