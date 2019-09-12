@@ -27,38 +27,52 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""Initialize the Jupyter server extension."""
+"""Individual handlers which execute Git commands and return results to the frontend."""
 
-from jupyterlab_simple_git.handlers import add_handlers
-from jupyterlab_simple_git.git import Git
+# pylint: disable=W0223
 
-
-def _jupyter_server_extension_paths():
-    """Declare the Jupyter server extension paths."""
-    return [
-        {
-            'module': 'jupyterlab_simple_git'
-        }
-    ]
+from notebook.base.handlers import APIHandler
+from notebook.utils import url_path_join
 
 
-def _jupyter_nbextension_paths():
-    """Declare the Jupyter notebook extension paths."""
-    return [
-        {
-            'section': 'notebook',
-            'dest': 'jupyterlab_simple_git'
-        }
-    ]
+class BaseHandler(APIHandler):
+    """Base handler class.
 
-
-def load_jupyter_server_extension(nbapp):
-    """Load the Jupyter server extension.
-
-    Args:
-        nbapp: handle to the Notebook web server instance
+    Attributes:
+        git: Git command executer
 
     """
-    root = nbapp.web_app.settings.get('server_root_dir')
-    nbapp.web_app.settings['simple_git'] = Git(root)
-    add_handlers(nbapp.web_app)
+
+    @property
+    def git(self):
+        """Return the Git command executor."""
+        return self.settings['git']
+
+
+class CurrentChangedFiles(BaseHandler):
+    """Handler class for retrieving the list of files containing changes relative to the index."""
+
+    def get(self):
+        """Retrieve the list of files containing changes relative to the index."""
+        path = self.get_query_argument('path', default='.')
+        res = self.git.current_changed_files(path)
+        self.finish(res)
+
+
+def add_handlers(web_app):
+    """Add handlers for executing Git commands.
+
+    Args:
+        web_app: handle to the Notebook web server instance
+
+    """
+    handlers = [
+        ('/simple_git/current_changed_files', CurrentChangedFiles)
+    ]
+
+    # Prefix the base URL to each handler:
+    base_url = web_app.settings['base_url']
+    handlers = [(url_path_join(base_url, x[0]), x[1]) for x in handlers]
+
+    # Add the handlers to the Notebook server:
+    web_app.add_handlers('.*$', handlers)

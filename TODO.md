@@ -9,9 +9,6 @@
     -   pull (how to deal with merge conflicts? see https://www.gitkraken.com/git-client for possible inspiration)
     -   list number of changes (additions, deletions, etc)
     -   diff
-    -   list_branches(local=True, remote=False)?
-    -   list_local_branches
-    -   list remote branches?
 7.  create sublime snippets similar to stdlib
 8.  routes based on flags
     -   /reset
