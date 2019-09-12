@@ -29,6 +29,8 @@
 
 """Initialize the Jupyter server extension."""
 
+# pylint: disable=W0511
+
 from jupyterlab_simple_git.handlers import add_handlers
 from jupyterlab_simple_git.git import Git
 
@@ -60,5 +62,7 @@ def load_jupyter_server_extension(nbapp):
 
     """
     root = nbapp.web_app.settings.get('server_root_dir')
+
+    # TODO: we assume that the root directory is (or will be) a Git repository. Should we account for it being otherwise?
     nbapp.web_app.settings['simple_git'] = Git(root)
     add_handlers(nbapp.web_app)
