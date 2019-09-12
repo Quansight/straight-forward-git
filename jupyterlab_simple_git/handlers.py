@@ -135,11 +135,56 @@ class Commit(BaseHandler):
         if 'subject' not in data:
             raise tornado.web.HTTPError(400, 'must provide a subject')
 
-        body = None
         if 'body' in data:
             body = data['body']
+        else:
+            body = None
 
         res = self.git.commit(data['subject'], body)
+        self.finish(res)
+
+
+class CommitHistory(BaseHandler):
+    """Handler for returning a commit history."""
+
+    def get(self):
+        """Return a commit history.
+
+        Fields:
+            path: subdirectory path (optional)
+            n: number of commits (optional)
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,               # command status code
+                'history': [...Object]     # command results
+            }
+
+            where each `Object` in `history` has the following format:
+
+
+            {
+                'hash': string,           # commit hash
+                'author': string,         # commit author
+                'relative_date': string,  # relative date of commit
+                'message': string         # commit message
+            }
+
+        """
+        data = self.get_json_body()
+        if 'path' in data:
+            path = data['path']
+        else:
+            path = '.'
+
+        if 'n' in data:
+            n = data['n']
+        else:
+            n = None
+
+        res = self.git.commit_history(path, n)
         self.finish(res)
 
 
@@ -175,6 +220,7 @@ def add_handlers(web_app):
         ('/simple_git/add', AddFiles),
         ('/simple_git/checkout_branch', CheckoutBranch),
         ('/simple_git/commit', Commit),
+        ('/simple_git/commit_history', CommitHistory),
         ('/simple_git/current_changed_files', CurrentChangedFiles)
     ]
 
