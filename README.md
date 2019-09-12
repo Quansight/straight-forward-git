@@ -18,7 +18,8 @@ $ jupyter labextension install jupyterlab-simple-git
 For a development install, do the following in the repository directory:
 
 ```bash
-$ npm install
+$ make init
+$ make install
 $ npm run build
 $ jupyter labextension link .
 ```
