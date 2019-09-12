@@ -480,7 +480,7 @@ class UntrackedFiles(BaseHandler):
 
         """
         path = self.get_query_argument('path', default='.')
-        res = self.git.current_changed_files(path)
+        res = self.git.untracked_files(path)
         self.finish(res)
 
 
