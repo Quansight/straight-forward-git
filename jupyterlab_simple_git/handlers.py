@@ -96,6 +96,7 @@ def add_handlers(web_app):
     """
     handlers = [
         # Please keep handlers in alphabetical order...
+        ('/simple_git/add', AddFiles),
         ('/simple_git/current_changed_files', CurrentChangedFiles)
     ]
 
