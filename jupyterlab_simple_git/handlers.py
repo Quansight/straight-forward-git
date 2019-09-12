@@ -270,6 +270,41 @@ class DeleteUntrackedFiles(BaseHandler):
         self.finish(res)
 
 
+class Fetch(BaseHandler):
+    """Handler to download objects and refs from a remote repository."""
+
+    def get(self):
+        """Download objects and refs from a remote repository.
+
+        Fields:
+            remote: name of remote (optional)
+            prune: boolean indicating whether to remove any remote-tracking references that no longer exist on the remote (optional)
+            fetch_all: boolean indicating whether to fetch all remotes (optional)
+
+        Response:
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        remote = self.get_query_argument('remote', default=None)
+        prune = self.get_query_argument('prune', default='False')
+        if prune == 'True':
+            prune = True
+        elif prune == 'False':
+            prune = False
+
+        fetch_all = self.get_query_argument('fetch_all', default='False')
+        if fetch_all == 'True':
+            fetch_all = True
+        elif fetch_all == 'False':
+            fetch_all = False
+
+        res = self.git.fetch(remote, prune, fetch_all)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -286,7 +321,8 @@ def add_handlers(web_app):
         ('/simple_git/current_branch', CurrentBranch),
         ('/simple_git/current_changed_files', CurrentChangedFiles),
         ('/simple_git/delete_branch', DeleteBranch),
-        ('/simple_git/delete_untracked_files', DeleteUntrackedFiles)
+        ('/simple_git/delete_untracked_files', DeleteUntrackedFiles),
+        ('/simple_git/fetch', Fetch)
     ]
 
     # Prefix the base URL to each handler:
