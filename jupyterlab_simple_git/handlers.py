@@ -51,8 +51,34 @@ class BaseHandler(APIHandler):
 
 # Please keep handler classes in alphabetical order...
 
+class AddFiles(BaseHandler):
+    """Handler for adding file contents to the index."""
+
+    def post(self):
+        """Add file contents to the index.
+
+        Fields:
+            path: a subdirectory path, file path, glob, or a list of paths and/or globs
+            update_all: boolean indicating whether to update all entries in the index to match the working tree
+
+        """
+        data = self.get_json_body()
+        if data['path']:
+            path = data['path']
+        else:
+            path = '.'
+
+        if data['update_all'] == 'False':
+            update_all = False
+        else:
+            update_all = True
+
+        res = self.git.add(path=path, update_all=update_all)
+        self.finish(res)
+
+
 class CurrentChangedFiles(BaseHandler):
-    """Handler class for retrieving the list of files containing changes relative to the index."""
+    """Handler for retrieving the list of files containing changes relative to the index."""
 
     def get(self):
         """Retrieve the list of files containing changes relative to the index."""
