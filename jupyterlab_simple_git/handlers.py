@@ -322,6 +322,25 @@ class Init(BaseHandler):
         self.finish(res)
 
 
+class LocalBranches(BaseHandler):
+    """Handler for returning a list of local branches."""
+
+    def get(self):
+        """Return a list of local branches.
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,             # command status code
+                'branches': [...string]  # list of branches
+            }
+
+        """
+        res = self.git.local_branches()
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -340,7 +359,8 @@ def add_handlers(web_app):
         ('/simple_git/delete_branch', DeleteBranch),
         ('/simple_git/delete_untracked_files', DeleteUntrackedFiles),
         ('/simple_git/fetch', Fetch),
-        ('/simple_git/init', Init)
+        ('/simple_git/init', Init),
+        ('/simple_git/local_branches', LocalBranches)
     ]
 
     # Prefix the base URL to each handler:

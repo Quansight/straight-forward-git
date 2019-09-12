@@ -462,7 +462,7 @@ class Git():
         return self._run(cmd)
 
     def local_branches(self):
-        """Return the list of local branches.
+        """Return a list of local branches.
 
         Returns:
             A `dict` containing a list of local branches. If able to successfully resolve a list of local branches, the returned `dict` has the following format:
