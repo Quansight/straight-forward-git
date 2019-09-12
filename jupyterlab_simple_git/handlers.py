@@ -31,6 +31,7 @@
 
 # pylint: disable=W0223
 
+import tornado.web
 from notebook.base.handlers import APIHandler
 from notebook.utils import url_path_join
 
@@ -81,7 +82,7 @@ class AddFiles(BaseHandler):
         else:
             update_all = True
 
-        res = self.git.add(path=path, update_all=update_all)
+        res = self.git.add(path, update_all)
         self.finish(res)
 
 
@@ -104,7 +105,41 @@ class CheckoutBranch(BaseHandler):
 
         """
         data = self.get_json_body()
+        if 'branch' not in data:
+            raise tornado.web.HTTPError(400, 'must provide a branch name')
+
         res = self.git.checkout_branch(data['branch'])
+        self.finish(res)
+
+
+class Commit(BaseHandler):
+    """Handler to record changes to the repository."""
+
+    def post(self):
+        """Record changes to the repository.
+
+        Fields:
+            subject: commit subject/summary
+            body: commit description
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        data = self.get_json_body()
+        if 'subject' not in data:
+            raise tornado.web.HTTPError(400, 'must provide a subject')
+
+        body = None
+        if 'body' in data:
+            body = data['body']
+
+        res = self.git.commit(data['subject'], body)
         self.finish(res)
 
 
@@ -139,6 +174,7 @@ def add_handlers(web_app):
         # Please keep handlers in alphabetical order...
         ('/simple_git/add', AddFiles),
         ('/simple_git/checkout_branch', CheckoutBranch),
+        ('/simple_git/commit', Commit),
         ('/simple_git/current_changed_files', CurrentChangedFiles)
     ]
 
