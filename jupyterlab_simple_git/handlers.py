@@ -424,6 +424,46 @@ class Run(BaseHandler):
         self.finish(res)
 
 
+class Status(BaseHandler):
+    """Handler for returning the working tree status."""
+
+    def get(self):
+        """Return the working tree status.
+
+        Fields:
+            path: subdirectory path (optional)
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,                # command status code
+                'differences': [...Object]  # list of changes
+            }
+
+            For modifications, additions, and deletions, each `Object` in `differences` has the following format:
+
+            {
+                'status': string,  # single-letter action abbreviation
+                'action': string,  # action
+                'file': string     # changed file
+            }
+
+            For copies and renames, each `Object` in `differences` has the following format:
+
+            {
+                'status': string,  # single-letter action abbreviation
+                'action': string,  # action
+                'to': string,      # original path
+                'from': string     # destination path
+            }
+
+        """
+        path = self.get_query_argument('path', default='.')
+        res = self.git.status(path)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -446,7 +486,8 @@ def add_handlers(web_app):
         ('/simple_git/local_branches', LocalBranches),
         ('/simple_git/push', Push),
         ('/simple_git/reset', Reset),
-        ('/simple_git/run', Run)
+        ('/simple_git/run', Run),
+        ('/simple_git/status', Status)
     ]
 
     # Prefix the base URL to each handler:
