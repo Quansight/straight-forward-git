@@ -61,14 +61,22 @@ class AddFiles(BaseHandler):
             path: a subdirectory path, file path, glob, or a list of paths and/or globs
             update_all: boolean indicating whether to update all entries in the index to match the working tree
 
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
         """
         data = self.get_json_body()
-        if data['path']:
+        if 'path' in data:
             path = data['path']
         else:
             path = '.'
 
-        if data['update_all'] == 'False':
+        if 'update_all' in data and data['update_all'] == 'False':
             update_all = False
         else:
             update_all = True
@@ -77,11 +85,44 @@ class AddFiles(BaseHandler):
         self.finish(res)
 
 
+class CheckoutBranch(BaseHandler):
+    """Handler for switching to a specified branch."""
+
+    def post(self):
+        """Switch to a specified branch.
+
+        Fields:
+            branch: branch name
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
+        data = self.get_json_body()
+        res = self.git.checkout_branch(data['branch'])
+        self.finish(res)
+
+
 class CurrentChangedFiles(BaseHandler):
     """Handler for retrieving the list of files containing changes relative to the index."""
 
     def get(self):
-        """Retrieve the list of files containing changes relative to the index."""
+        """Retrieve the list of files containing changes relative to the index.
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+        """
         path = self.get_query_argument('path', default='.')
         res = self.git.current_changed_files(path)
         self.finish(res)
@@ -97,6 +138,7 @@ def add_handlers(web_app):
     handlers = [
         # Please keep handlers in alphabetical order...
         ('/simple_git/add', AddFiles),
+        ('/simple_git/checkout_branch', CheckoutBranch),
         ('/simple_git/current_changed_files', CurrentChangedFiles)
     ]
 
