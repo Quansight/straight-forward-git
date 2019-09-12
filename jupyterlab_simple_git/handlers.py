@@ -173,17 +173,8 @@ class CommitHistory(BaseHandler):
             }
 
         """
-        data = self.get_json_body()
-        if 'path' in data:
-            path = data['path']
-        else:
-            path = '.'
-
-        if 'n' in data:
-            n = data['n']
-        else:
-            n = None
-
+        path = self.get_query_argument('path', default='.')
+        n = self.get_query_argument('n', default=None)
         res = self.git.commit_history(path, n)
         self.finish(res)
 
