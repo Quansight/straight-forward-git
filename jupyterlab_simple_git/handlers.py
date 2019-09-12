@@ -199,10 +199,10 @@ class CurrentBranch(BaseHandler):
 
 
 class CurrentChangedFiles(BaseHandler):
-    """Handler for retrieving the list of files containing changes relative to the index."""
+    """Handler for retrieving a list of files containing changes relative to the index."""
 
     def get(self):
-        """Retrieve the list of files containing changes relative to the index.
+        """Retrieve a list of files containing changes relative to the index.
 
         Response:
             A JSON object having the following format:
@@ -464,6 +464,26 @@ class Status(BaseHandler):
         self.finish(res)
 
 
+class UntrackedFiles(BaseHandler):
+    """Handler for retrieving a list of untracked files."""
+
+    def get(self):
+        """Retrieve a list of untracked files.
+
+        Response:
+            A JSON object having the following format:
+
+            {
+                'code': int,          # command status code
+                'files': [...string]  # list of untracked files
+            }
+
+        """
+        path = self.get_query_argument('path', default='.')
+        res = self.git.current_changed_files(path)
+        self.finish(res)
+
+
 def add_handlers(web_app):
     """Add handlers for executing Git commands.
 
@@ -487,7 +507,8 @@ def add_handlers(web_app):
         ('/simple_git/push', Push),
         ('/simple_git/reset', Reset),
         ('/simple_git/run', Run),
-        ('/simple_git/status', Status)
+        ('/simple_git/status', Status),
+        ('/simple_git/untracked_files', UntrackedFiles)
     ]
 
     # Prefix the base URL to each handler:
