@@ -98,6 +98,7 @@ class Git():
             clbk(response, stdout.decode('utf8').strip())
         else:
             response['message'] = stdout.decode('utf8').strip()
+
         return response
 
     def add(self, path='.', update_all=True):
@@ -175,6 +176,42 @@ class Git():
 
         cmd2.append(branch)
         return self._run(cmd2)
+
+    def commit(self, subject, body=None):
+        """Record changes to the repository.
+
+        Args:
+            subject: commit subject/summary
+            body: commit description
+
+        Returns:
+            A `dict` containing command results. If able to successfully execute command, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # command results
+            }
+
+            Otherwise, if an error is encountered, the returned `dict` has the following format:
+
+            {
+                'code': int,          # command status code
+                'message': string     # error message
+            }
+
+        Raises:
+            HTTPError: must provide a valid subject argument
+
+        """
+        if not isinstance(subject, str) or subject == '':
+            raise tornado.web.HTTPError(400, 'invalid argument. Must provide a valid subject argument.')
+
+        cmd = ['git', 'commit', '-m', subject]
+        if body is not None:
+            cmd.append('-m')
+            cmd.append(body)
+
+        return self._run(cmd)
 
     def commit_history(self, path='.', n=None):
         """Return a commit history.
