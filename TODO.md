@@ -9,4 +9,3 @@
     -   pull (how to deal with merge conflicts? see https://www.gitkraken.com/git-client for possible inspiration)
     -   list number of changes (additions, deletions, etc)
     -   diff
-7.  create sublime snippets similar to stdlib
