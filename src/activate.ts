@@ -43,7 +43,7 @@ import SimpleGitUI from './git_ui';
 *
 * @private
 * @param app - Jupyter front-end application instance
-* @param labShell - JupyterLab shell interface
+* @param labShell - JupyterLab shell
 */
 function activate(app: JupyterFrontEnd, labShell: ILabShell) {
 	const widget = new SimpleGitUI();
