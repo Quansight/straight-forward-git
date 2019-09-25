@@ -31,7 +31,7 @@
 
 // MODULES //
 
-import { JupyterFrontEnd, JupyterFrontEndPlugin, ILabShell } from '@jupyterlab/application';
+import { JupyterFrontEndPlugin, ILabShell } from '@jupyterlab/application';
 import activate from './activate';
 
 
