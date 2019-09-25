@@ -39,14 +39,23 @@ import { ReactWidget } from '@jupyterlab/apputils';
 
 /**
 * Widget class which adds a Git tab to the left panel.
+*
+* @private
 */
-class SimpleGitUI extends ReactWidget {
+class GitTabWidget extends ReactWidget {
+	/**
+	* Constructor.
+	*
+	* @returns widget instance
+	*/
 	constructor() {
 		super();
 	}
 
 	/**
 	* Renders the React component.
+	*
+	* @returns React element(s)
 	*/
 	protected render(): React.ReactElement<any> | React.ReactElement<any>[] {
 		return (
@@ -71,4 +80,4 @@ class SimpleGitUI extends ReactWidget {
 
 // EXPORTS //
 
-export default SimpleGitUI;
+export default GitTabWidget;

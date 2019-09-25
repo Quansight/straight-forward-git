@@ -33,7 +33,7 @@
 
 import { JupyterFrontEnd, ILabShell } from '@jupyterlab/application';
 import { Widget } from '@phosphor/widgets';
-import SimpleGitUI from './git_ui';
+import GitTabWidget from './git_ui';
 
 
 // MAIN //
@@ -46,7 +46,7 @@ import SimpleGitUI from './git_ui';
 * @param labShell - JupyterLab shell
 */
 function activate(app: JupyterFrontEnd, labShell: ILabShell) {
-	const widget = new SimpleGitUI();
+	const widget = new GitTabWidget();
 	widget.id = 'jupyterlab-simple-git:ui';
 	widget.title.iconClass = 'jp-GitIcon jp-SideBar-tabIcon';
 	widget.title.caption = 'Simple Git';
